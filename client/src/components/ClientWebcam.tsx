@@ -11,7 +11,7 @@ const ClientWebcam = ({
   const videoConstraints = {
     width: { min: 480 },
     height: { min: 720 },
-    aspectRatio: 0.666666667,
+    aspectRatio: 2/3,
   };
   const webCamStyle = {
     position: "absolute" as const,
