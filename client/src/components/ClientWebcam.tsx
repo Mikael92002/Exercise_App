@@ -1,7 +1,5 @@
-import { useMemo, useRef, useState } from "react";
 import styles from "../css modules/Webcam.module.css";
 import Webcam from "react-webcam";
-import { DrawingUtils, PoseLandmarker } from "@mediapipe/tasks-vision";
 
 const ClientWebcam = ({
   camRef,
