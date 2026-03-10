@@ -1,10 +1,10 @@
 import "./App.css";
-import ClientWebcam from "./components/ClientWebcam";
+import PoseCamController from "./components/PoseCamController";
 
 function App() {
   return (
     <div className="App_container">
-      <ClientWebcam />
+      <PoseCamController />
     </div>
   );
 }
