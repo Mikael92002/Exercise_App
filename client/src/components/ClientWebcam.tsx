@@ -15,9 +15,19 @@ const ClientWebcam = ({
     height: { min: 720 },
     aspectRatio: 0.666666667,
   };
+  const webCamStyle = {
+    position: "absolute" as const,
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%",
+    objectFit: "cover" as const,
+  };
+
   return (
     <>
       <Webcam
+        style={webCamStyle}
         ref={camRef}
         videoConstraints={videoConstraints}
         width={480}
