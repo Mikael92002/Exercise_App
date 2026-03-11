@@ -9,9 +9,8 @@ const ClientWebcam = ({
   setNoCam: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const videoConstraints = {
-    width: { min: 480 },
-    height: { min: 720 },
-    aspectRatio: 2/3,
+    // width: { min: 480 },
+    // height: { min: 720 },
   };
   const webCamStyle = {
     position: "absolute" as const,
@@ -19,7 +18,6 @@ const ClientWebcam = ({
     left: 0,
     width: "100%",
     height: "100%",
-    objectFit: "cover" as const,
   };
 
   return (
@@ -28,8 +26,8 @@ const ClientWebcam = ({
         style={webCamStyle}
         ref={camRef}
         videoConstraints={videoConstraints}
-        width={480}
-        height={720}
+        width={640}
+        height={480}
         className={styles.webcam}
         onUserMediaError={() => {
           console.log("user media error");

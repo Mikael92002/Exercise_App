@@ -87,18 +87,13 @@ const PoseCamController = () => {
               PoseLandmarker.POSE_CONNECTIONS,
             );
           }
-          if (results.segmentationMasks) {
-            for (const mask of results.segmentationMasks) {
-              console.log(mask.canvas);
-            }
-          }
         }
         canvasCtx.restore();
         // will log object which contains:
         // {landmarks: [Array(33)],
         // segmentationMasks: [an object],
         // worldLandmarks: [Array(33)]}
-        console.log(results);
+        // console.log(results);
       }
     }
 
@@ -135,7 +130,9 @@ const PoseCamController = () => {
   };
 
   return (
-    <div style={{ position: "relative" }}>
+    <div
+      style={{ position: "relative", width: "640px", height: "480px" }}
+    >
       {!isLoaded && <p>Loading poseLandmarker</p>}
       {noCam ? (
         <p>No camera access found.</p>
@@ -148,13 +145,18 @@ const PoseCamController = () => {
             <div
               style={{
                 position: "relative",
-                width: "480px",
-                height: "720px",
+                width: "640px",
+                height: "480px",
                 overflow: "hidden",
               }}
             >
               <ClientWebcam camRef={webcamRef} setNoCam={setNoCam} />
-              <canvas ref={canvasRef} style={canvasStyle}></canvas>
+              <canvas
+                width={331}
+                height={718}
+                ref={canvasRef}
+                style={canvasStyle}
+              ></canvas>
             </div>
           )}
         </>
