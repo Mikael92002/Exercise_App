@@ -8,6 +8,7 @@ import { useState, useRef, useMemo, useEffect, useCallback } from "react";
 import Webcam from "react-webcam";
 import { createPoseLandmarker } from "./Pose";
 import styles from "../css modules/PoseCamController.module.css";
+import { ExerciseCalculator } from "./ExerciseCalculator";
 
 const PoseCamController = () => {
   const landmarkerRef = useRef<PoseLandmarker | null>(null);
@@ -18,6 +19,7 @@ const PoseCamController = () => {
   // needs to be a ref unlike a "let" in google's official code
   // because setLastVideoTime would cause a re-render:
   const lastVideoTimeRef = useRef<number>(-1);
+  const ExerciseCalculatorRef = useRef<ExerciseCalculator | null>(null);
   // track landmarker loading:
   const [isLoaded, setIsLoaded] = useState(false);
   const [noCam, setNoCam] = useState<boolean>(false);
@@ -38,6 +40,8 @@ const PoseCamController = () => {
     async function init() {
       const landMarker = await createPoseLandmarker();
       landmarkerRef.current = landMarker;
+      const exerciseCalc = new ExerciseCalculator("Left Bicep Curl");
+      ExerciseCalculatorRef.current = exerciseCalc;
       setIsLoaded(true);
     }
     init();
@@ -84,7 +88,14 @@ const PoseCamController = () => {
         // landmark = [33 landmark objs]
         if (results.landmarks) {
           for (const landmark of results.landmarks) {
-            const filteredArr = filterLandmarks(landmark, 0.75);
+            const filteredArr = filterLandmarksByLandmarks(
+              landmark,
+              [11, 13, 15],
+            );
+            const distanceArr =
+              ExerciseCalculatorRef.current?.getDistances(filteredArr);
+            const angle = ExerciseCalculatorRef.current?.getAngle(distanceArr!);
+            console.log(angle);
 
             drawingUtils.drawLandmarks(filteredArr, {
               radius: (data) =>
@@ -92,7 +103,7 @@ const PoseCamController = () => {
               color: "red",
             });
             drawingUtils.drawConnectors(
-              landmark,
+              filteredArr,
               PoseLandmarker.POSE_CONNECTIONS,
             );
           }
@@ -126,7 +137,7 @@ const PoseCamController = () => {
     }
   }
 
-  function filterLandmarks(
+  function filterLandmarksByVisibility(
     landmarks: NormalizedLandmark[],
     targetVisibility: number,
   ) {
@@ -135,6 +146,17 @@ const PoseCamController = () => {
       if (landmark.visibility >= targetVisibility) {
         filteredArr.push(landmark);
       }
+    }
+    return filteredArr;
+  }
+
+  function filterLandmarksByLandmarks(
+    landmarks: NormalizedLandmark[],
+    targetLandmarks: number[],
+  ) {
+    const filteredArr: NormalizedLandmark[] = [];
+    for (let i = 0; i < targetLandmarks.length; i++) {
+      filteredArr.push(landmarks[targetLandmarks[i]]);
     }
     return filteredArr;
   }
