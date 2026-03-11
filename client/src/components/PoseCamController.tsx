@@ -1,8 +1,13 @@
-import { PoseLandmarker, DrawingUtils } from "@mediapipe/tasks-vision";
+import {
+  PoseLandmarker,
+  DrawingUtils,
+  type NormalizedLandmark,
+} from "@mediapipe/tasks-vision";
 import ClientWebcam from "./ClientWebcam";
 import { useState, useRef, useMemo, useEffect, useCallback } from "react";
 import Webcam from "react-webcam";
 import { createPoseLandmarker } from "./Pose";
+import styles from "../css modules/PoseCamController.module.css";
 
 const PoseCamController = () => {
   const landmarkerRef = useRef<PoseLandmarker | null>(null);
@@ -75,12 +80,16 @@ const PoseCamController = () => {
         canvasCtx.save();
         canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
 
-        // looping thru 33 landmarks:
+        //results.landmarks = [[33 landmark objs]]
+        // landmark = [33 landmark objs]
         if (results.landmarks) {
           for (const landmark of results.landmarks) {
-            drawingUtils.drawLandmarks(landmark, {
+            const filteredArr = filterLandmarks(landmark, 0.75);
+
+            drawingUtils.drawLandmarks(filteredArr, {
               radius: (data) =>
                 DrawingUtils.lerp(data.from!.z, -0.15, 0.1, 5, 1),
+              color: "red",
             });
             drawingUtils.drawConnectors(
               landmark,
@@ -89,11 +98,9 @@ const PoseCamController = () => {
           }
         }
         canvasCtx.restore();
-        // will log object which contains:
-        // {landmarks: [Array(33)],
-        // segmentationMasks: [an object],
-        // worldLandmarks: [Array(33)]}
-        // console.log(results);
+        // results.landmarks contains:
+        // {landmarks: [[[33 landmark objs]]],
+        // worldLandmarks: [[[33 landmark objs]]]}
       }
     }
 
@@ -119,20 +126,21 @@ const PoseCamController = () => {
     }
   }
 
-  const canvasStyle = {
-    position: "absolute" as const,
-    top: 0,
-    left: 0,
-    width: "100%",
-    height: "100%",
-    objectFit: "cover" as const,
-    pointerEvents: "none" as const,
-  };
+  function filterLandmarks(
+    landmarks: NormalizedLandmark[],
+    targetVisibility: number,
+  ) {
+    const filteredArr: NormalizedLandmark[] = [];
+    for (const landmark of landmarks) {
+      if (landmark.visibility >= targetVisibility) {
+        filteredArr.push(landmark);
+      }
+    }
+    return filteredArr;
+  }
 
   return (
-    <div
-      style={{ position: "relative", width: "640px", height: "480px" }}
-    >
+    <div className={styles.main_container}>
       {!isLoaded && <p>Loading poseLandmarker</p>}
       {noCam ? (
         <p>No camera access found.</p>
@@ -142,21 +150,11 @@ const PoseCamController = () => {
             {camEnabled ? "Disable Cam" : "Enable Cam"}
           </button>
           {camEnabled && (
-            <div
-              style={{
-                position: "relative",
-                width: "640px",
-                height: "480px",
-                overflow: "hidden",
-              }}
-            >
-              <ClientWebcam camRef={webcamRef} setNoCam={setNoCam} />
-              <canvas
-                width={331}
-                height={718}
-                ref={canvasRef}
-                style={canvasStyle}
-              ></canvas>
+            <div className={styles.webcam_canvas_container}>
+              <div>
+                <ClientWebcam camRef={webcamRef} setNoCam={setNoCam} />
+                <canvas ref={canvasRef}></canvas>
+              </div>
             </div>
           )}
         </>

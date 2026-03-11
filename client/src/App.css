@@ -1,5 +1,11 @@
-#root {
+#root, body, html {
   margin: 0;
   padding: 0;
   text-align: center;
+  height: 100%;
+  width: 100%
+}
+
+.app_container{
+  height: 100%;
 }

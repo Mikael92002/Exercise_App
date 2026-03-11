@@ -3,7 +3,7 @@ import PoseCamController from "./components/PoseCamController";
 
 function App() {
   return (
-    <div className="App_container">
+    <div className="app_container">
       <PoseCamController />
     </div>
   );
