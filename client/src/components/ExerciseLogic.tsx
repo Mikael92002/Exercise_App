@@ -25,8 +25,7 @@ export class ExerciseLogic {
     // state 1: between 180 and 60 deg (concentric)
     // when <60 deg, change to state 2
     // state 2: between 60 and 180 deg (eccentric)
-    // state 3: rep complete
-    // reset state to 0
+    // reset state to 0 when state 2 passed
     // full rep completed when back to 180/ reset state to 0.
 
     // concentric case:
@@ -53,12 +52,9 @@ export class ExerciseLogic {
         this.exerciseCalculator.states["state 0"] &&
       this.state === 2
     ) {
-      this.state = 3;
-    }
-    // resting case:
-    if (this.state === 3) {
       this.reps++;
       this.state = 0;
     }
+    // resting case:
   }
 }
