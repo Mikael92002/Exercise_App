@@ -6,14 +6,23 @@ export class ExerciseCalculator {
   states: StateType;
   landmarks: LandmarkType;
   enumObj = ExerciseEnum();
+  angle: number;
+  distanceArray: number[];
 
   constructor(exercise: KeyType) {
     this.states = this.enumObj[exercise]["states"];
     this.landmarks = this.enumObj[exercise]["landmarks"];
+    this.angle = -1;
+    this.distanceArray = [0, 0, 0];
+
+    if (exercise === "Left Bicep Curl") {
+      this.states["state 0"] = 160;
+      this.states["state 2"] = 50;
+    }
   }
 
   // pass in filtered landmark array from poseLandmarker:
-  getDistances(landmarkArr: NormalizedLandmark[]) {
+  calculateDistances(landmarkArr: NormalizedLandmark[]) {
     const A = landmarkArr[0];
     const B = landmarkArr[1];
     const C = landmarkArr[2];
@@ -24,17 +33,22 @@ export class ExerciseCalculator {
     //AC: 12 to 16
     const AC = Math.sqrt(Math.pow(C.x - A.x, 2) + Math.pow(C.y - A.y, 2));
 
-    return [AB, BC, AC];
+    const distances = [AB, BC, AC];
+    this.distanceArray = distances;
+
+    return distances;
   }
 
-  getAngle(distanceArr: number[]) {
+  calculateAngle() {
     let angle = Math.acos(
-      (Math.pow(distanceArr[1], 2) +
-        Math.pow(distanceArr[0], 2) -
-        Math.pow(distanceArr[2], 2)) /
-        (2 * distanceArr[1] * distanceArr[0]),
+      (Math.pow(this.distanceArray[1], 2) +
+        Math.pow(this.distanceArray[0], 2) -
+        Math.pow(this.distanceArray[2], 2)) /
+        (2 * this.distanceArray[1] * this.distanceArray[0]),
     );
-    angle = angle*(180/Math.PI)
+    angle = angle * (180 / Math.PI);
+    this.angle = angle;
+
     return angle;
   }
 }

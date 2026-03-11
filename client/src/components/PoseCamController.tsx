@@ -9,6 +9,7 @@ import Webcam from "react-webcam";
 import { createPoseLandmarker } from "./Pose";
 import styles from "../css modules/PoseCamController.module.css";
 import { ExerciseCalculator } from "./ExerciseCalculator";
+import { ExerciseLogic } from "./ExerciseLogic";
 
 const PoseCamController = () => {
   const landmarkerRef = useRef<PoseLandmarker | null>(null);
@@ -20,10 +21,12 @@ const PoseCamController = () => {
   // because setLastVideoTime would cause a re-render:
   const lastVideoTimeRef = useRef<number>(-1);
   const ExerciseCalculatorRef = useRef<ExerciseCalculator | null>(null);
+  const ExerciseLogicRef = useRef<ExerciseLogic | null>(null);
   // track landmarker loading:
   const [isLoaded, setIsLoaded] = useState(false);
   const [noCam, setNoCam] = useState<boolean>(false);
   const [camEnabled, setCamEnabled] = useState(false);
+  const [displayReps, setDisplayReps] = useState(0);
 
   // need to run only once to determine if user has permissions:
   const hasGetUserMedia = useMemo(
@@ -41,7 +44,9 @@ const PoseCamController = () => {
       const landMarker = await createPoseLandmarker();
       landmarkerRef.current = landMarker;
       const exerciseCalc = new ExerciseCalculator("Left Bicep Curl");
+      const exerciseLogic = new ExerciseLogic(exerciseCalc);
       ExerciseCalculatorRef.current = exerciseCalc;
+      ExerciseLogicRef.current = exerciseLogic;
       setIsLoaded(true);
     }
     init();
@@ -92,10 +97,17 @@ const PoseCamController = () => {
               landmark,
               [11, 13, 15],
             );
-            const distanceArr =
-              ExerciseCalculatorRef.current?.getDistances(filteredArr);
-            const angle = ExerciseCalculatorRef.current?.getAngle(distanceArr!);
-            console.log(angle);
+
+            if (checkLandmarkVisibilityByThreshold(filteredArr, 0.8)) {
+              ExerciseCalculatorRef.current?.calculateDistances(filteredArr);
+              ExerciseCalculatorRef.current?.calculateAngle();
+
+              ExerciseLogicRef.current?.stateUpdateLoop();
+              const newRepCount = ExerciseLogicRef.current?.reps;
+              if (newRepCount !== displayReps) {
+                setDisplayReps(newRepCount!);
+              }
+            }
 
             drawingUtils.drawLandmarks(filteredArr, {
               radius: (data) =>
@@ -161,8 +173,21 @@ const PoseCamController = () => {
     return filteredArr;
   }
 
+  function checkLandmarkVisibilityByThreshold(
+    landmarks: NormalizedLandmark[],
+    targetVisibility: number,
+  ) {
+    for (let landmark of landmarks) {
+      if (landmark.visibility < targetVisibility) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   return (
     <div className={styles.main_container}>
+      <div className={styles.rep_counter}>Reps: {displayReps}</div>
       {!isLoaded && <p>Loading poseLandmarker</p>}
       {noCam ? (
         <p>No camera access found.</p>

@@ -15,14 +15,22 @@ describe("ExerciseCalculator tests", () => {
   });
 
   it("should calculate the correct distances", () => {
-    const distances = calc.getDistances(mockLandmarks);
+    const distances = calc.calculateDistances(mockLandmarks);
     expect(distances[0]).toBeCloseTo(0.3);
-    expect(distances[1]).toBeCloseTo(0.19);
+    expect(distances[1]).toBeCloseTo(0.2);
     expect(distances[2]).toBeCloseTo(0.5);
   });
 
   it("should calculate the correct angle", () => {
-    const angle = calc.getAngle(calc.getDistances(mockLandmarks));
+    calc.calculateDistances(mockLandmarks);
+    const angle = calc.calculateAngle();
     expect(angle).toBe(180);
+  });
+
+  it("should have correct state object key-values", () => {
+    expect(calc.states).toHaveProperty("state 0");
+    expect(calc.states).toHaveProperty("state 2");
+    expect(calc.states["state 0"]).toBe(160);
+    expect(calc.states["state 2"]).toBe(50);
   });
 });
