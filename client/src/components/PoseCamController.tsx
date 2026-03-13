@@ -10,6 +10,11 @@ import { createPoseLandmarker } from "./Pose";
 import styles from "../css modules/PoseCamController.module.css";
 import { ExerciseCalculator } from "./ExerciseCalculator";
 import { ExerciseLogic } from "./ExerciseLogic";
+import {
+  addToSlidingWindow,
+  findMedian,
+  movingAverage,
+} from "../utils/functions";
 
 const PoseCamController = () => {
   const landmarkerRef = useRef<PoseLandmarker | null>(null);
@@ -22,6 +27,7 @@ const PoseCamController = () => {
   const lastVideoTimeRef = useRef<number>(-1);
   const ExerciseCalculatorRef = useRef<ExerciseCalculator | null>(null);
   const ExerciseLogicRef = useRef<ExerciseLogic | null>(null);
+  const slidingWindow = useRef<number[]>([]);
   // track landmarker loading:
   const [isLoaded, setIsLoaded] = useState(false);
   const [noCam, setNoCam] = useState<boolean>(false);
@@ -100,9 +106,19 @@ const PoseCamController = () => {
 
             if (checkLandmarkVisibilityByThreshold(filteredArr, 0.8)) {
               ExerciseCalculatorRef.current?.calculateDistances(filteredArr);
-              ExerciseCalculatorRef.current?.calculateAngle();
+              // raw angle:
+              const angle = ExerciseCalculatorRef.current?.calculateAngle();
+              // add to global sliding window:
+              addToSlidingWindow(angle!, slidingWindow.current);
+              // returns median filtered angle and adds to internal filteredArr:
+              ExerciseCalculatorRef.current?.filterAngle(slidingWindow.current)!;
+              // ONLY returns smoothed (does not add to internal filteredArr):
+              ExerciseCalculatorRef.current?.smoothAngle()!;
 
+              // state machine:
               ExerciseLogicRef.current?.stateUpdateLoop();
+
+              console.log("unfiltered angle: " + angle + " filtered angle: " + ExerciseCalculatorRef.current?.filteredSmoothedAngle);
               const newRepCount = ExerciseLogicRef.current?.reps;
               if (newRepCount !== displayReps) {
                 setDisplayReps(newRepCount!);

@@ -1,6 +1,11 @@
 import type { NormalizedLandmark } from "@mediapipe/tasks-vision";
 import type { KeyType, LandmarkType, StateType } from "../types/types";
-import { ExerciseEnum } from "../utils/functions";
+import {
+  addToSlidingWindow,
+  ExerciseEnum,
+  findMedian,
+  movingAverage,
+} from "../utils/functions";
 
 export class ExerciseCalculator {
   states: StateType;
@@ -8,17 +13,16 @@ export class ExerciseCalculator {
   enumObj = ExerciseEnum();
   angle: number;
   distanceArray: number[];
+  filteredSmoothedAngle: number;
+  filteredSlidingWindow: number[];
 
   constructor(exercise: KeyType) {
     this.states = this.enumObj[exercise]["states"];
     this.landmarks = this.enumObj[exercise]["landmarks"];
     this.angle = -1;
     this.distanceArray = [0, 0, 0];
-
-    if (exercise === "Left Bicep Curl") {
-      this.states["state 0"] = 160;
-      this.states["state 2"] = 50;
-    }
+    this.filteredSmoothedAngle = 0;
+    this.filteredSlidingWindow = [];
   }
 
   // pass in filtered landmark array from poseLandmarker:
@@ -50,5 +54,20 @@ export class ExerciseCalculator {
     this.angle = angle;
 
     return angle;
+  }
+
+  filterAngle(slidingWindow: number[]) {
+    const filteredAngle = findMedian(slidingWindow);
+    addToSlidingWindow(filteredAngle, this.filteredSlidingWindow);
+    return filteredAngle;
+  }
+
+  smoothAngle() {
+    this.filteredSmoothedAngle = movingAverage(
+      this.filteredSlidingWindow,
+      this.filteredSmoothedAngle,
+      this.filteredSlidingWindow[this.filteredSlidingWindow.length - 1],
+    );
+    return this.filteredSmoothedAngle;
   }
 }

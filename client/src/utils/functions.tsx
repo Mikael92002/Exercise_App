@@ -3,8 +3,8 @@ import type { EnumObjType } from "../types/types";
 export function ExerciseEnum() {
   const enumObj: EnumObjType = {
     "Left Bicep Curl": {
-      states: { "state 0": 175, "state 2": 60 },
-      landmarks: [12, 14, 16],
+      states: { "state 0": 160, "state 2": 45 } as const,
+      landmarks: [11, 13, 15],
     },
   } as const;
   return enumObj;
@@ -12,7 +12,7 @@ export function ExerciseEnum() {
 
 export function findMedian(arr: number[]) {
   if (arr.length === 0) {
-    return [];
+    return 0;
   }
   let filteredArr = [...arr];
   filteredArr = filteredArr.sort((a, b) => a - b);
@@ -32,14 +32,14 @@ export function findMedian(arr: number[]) {
 }
 
 export function addToSlidingWindow(
-  unfilteredAngle: number,
+  angle: number,
   slidingWindow: number[],
 ) {
   // from global sliding window:
   if (slidingWindow.length === 5) {
     slidingWindow.shift();
   }
-  slidingWindow.push(unfilteredAngle);
+  slidingWindow.push(angle);
   return slidingWindow;
 }
 

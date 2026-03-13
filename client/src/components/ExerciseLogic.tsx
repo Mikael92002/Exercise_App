@@ -30,9 +30,9 @@ export class ExerciseLogic {
 
     // concentric case:
     if (
-      this.exerciseCalculator.angle <
+      this.exerciseCalculator.filteredSmoothedAngle <
         this.exerciseCalculator.states["state 0"] &&
-      this.exerciseCalculator.angle >
+      this.exerciseCalculator.filteredSmoothedAngle >
         this.exerciseCalculator.states["state 2"] &&
       this.state === 0
     ) {
@@ -40,7 +40,7 @@ export class ExerciseLogic {
     }
     // eccentric case:
     if (
-      this.exerciseCalculator.angle <
+      this.exerciseCalculator.filteredSmoothedAngle <
         this.exerciseCalculator.states["state 2"] &&
       this.state === 1
     ) {
@@ -48,7 +48,7 @@ export class ExerciseLogic {
     }
     // rep complete case:
     if (
-      this.exerciseCalculator.angle >
+      this.exerciseCalculator.filteredSmoothedAngle >
         this.exerciseCalculator.states["state 0"] &&
       this.state === 2
     ) {
