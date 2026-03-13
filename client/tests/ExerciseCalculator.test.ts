@@ -57,7 +57,7 @@ describe("filter and smoothing tests", () => {
   const slidingWindow = [];
   it("should build up a sliding window from length 0 to max length 5", () => {
     const incomingData = [10, 19, 16, 22, 20, 21, 25, 28, 26, 30];
-    
+
     const slidingWindow: number[] = [];
     for (let i = 0; i < incomingData.length; i++) {
       addToSlidingWindow(incomingData[i], slidingWindow);
@@ -78,4 +78,27 @@ describe("filter and smoothing tests", () => {
     expect(slidingWindow[0]).toBe(21);
     expect(slidingWindow[4]).toBe(30);
   });
+
+  it("should provide a correct median filter", ()=>{
+    const incomingData = [10, 19, 16, 22, 20, 21, 25, 28, 26, 30];
+
+    const slidingWindow: number[] = [];
+    for(let i = 0;i<incomingData.length;i++){
+      addToSlidingWindow(incomingData[i], slidingWindow);
+      const median = findMedian(slidingWindow);
+      if(i === 0){
+        expect(median).toBe(10)
+      }
+      if(i === 3){
+        expect(median).toBe(17.5);
+      }
+      if(i === 4){
+        expect(median).toBe(19);
+      }
+      if(i === 9){
+        expect(median).toBe(26);
+      }
+    }
+    expect(findMedian(slidingWindow)).toBe(26);
+  })
 });

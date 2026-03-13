@@ -37,3 +37,4 @@ export function addToSlidingWindow(
   slidingWindow.push(unfilteredAngle);
   return slidingWindow;
 }
+
