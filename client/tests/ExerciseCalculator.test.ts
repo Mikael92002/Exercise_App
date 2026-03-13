@@ -1,6 +1,7 @@
 import { NormalizedLandmark } from "@mediapipe/tasks-vision";
 import { ExerciseCalculator } from "../src/components/ExerciseCalculator";
 import { beforeEach, jest, test, describe, it, expect } from "@jest/globals";
+import { addToSlidingWindow, findMedian } from "../src/utils/functions";
 
 describe("ExerciseCalculator tests", () => {
   let calc: ExerciseCalculator;
@@ -32,5 +33,49 @@ describe("ExerciseCalculator tests", () => {
     expect(calc.states).toHaveProperty("state 2");
     expect(calc.states["state 0"]).toBe(160);
     expect(calc.states["state 2"]).toBe(50);
+  });
+});
+
+describe("filter and smoothing tests", () => {
+  it("should find the median in an array", () => {
+    const evenArr = [6, 12, 9, 3, 18, 15];
+    expect(findMedian(evenArr)).toBe(10.5);
+    const oddArr = [6, 12, 9, 18, 3];
+    expect(findMedian(oddArr)).toBe(9);
+    const singleElemArr = [1];
+    expect(findMedian(singleElemArr)).toBe(1);
+    const doubleElemArr = [1, 4];
+    expect(findMedian(doubleElemArr)).toBe(2.5);
+  });
+
+  const globalArr = [13, 15, 12, 16];
+  it("should mutate global array", () => {
+    findMedian(globalArr);
+    expect(globalArr).toEqual([12, 13, 15, 16]);
+  });
+
+  const slidingWindow = [];
+  it("should build up a sliding window from length 0 to max length 5", () => {
+    const incomingData = [10, 19, 16, 22, 20, 21, 25, 28, 26, 30];
+    
+    const slidingWindow: number[] = [];
+    for (let i = 0; i < incomingData.length; i++) {
+      addToSlidingWindow(incomingData[i], slidingWindow);
+      if (i === 0) {
+        expect(slidingWindow.length).toBe(1);
+      }
+      if (i === 1) {
+        expect(slidingWindow.length).toBe(2);
+      }
+      if (i === 4) {
+        expect(slidingWindow.length).toBe(5);
+      }
+      if (i === 6) {
+        expect(slidingWindow.length).toBe(5);
+      }
+    }
+    expect(slidingWindow.length).toBe(5);
+    expect(slidingWindow[0]).toBe(21);
+    expect(slidingWindow[4]).toBe(30);
   });
 });
