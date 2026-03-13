@@ -19,7 +19,11 @@ export function findMedian(arr: number[]) {
 
   // even arr:
   if (filteredArr.length % 2 == 0) {
-    return (filteredArr[filteredArr.length / 2] + filteredArr[filteredArr.length / 2 - 1]) / 2;
+    return (
+      (filteredArr[filteredArr.length / 2] +
+        filteredArr[filteredArr.length / 2 - 1]) /
+      2
+    );
   }
   // odd arr:
   else {
@@ -41,14 +45,16 @@ export function addToSlidingWindow(
 
 // the sliding window in this function's arg should
 // be median filtered:
-export function movingAverage(slidingWindow: number[], initialVal: number, newDataPoint: number) {
+export function movingAverage(
+  slidingWindow: number[],
+  initialVal: number,
+  newDataPoint: number,
+) {
   // for first 5 data points, do a simple moving average:
-  // use a 'seeded?' boolean in actual code:
-  if (slidingWindow.length < 4) {
+  if (slidingWindow.length<5) {
     return simpleMovingAverage(slidingWindow);
   }
-
-  return exponentialMovingAverage(slidingWindow, initialVal, newDataPoint);
+  return exponentialMovingAverage(initialVal, newDataPoint);
 }
 
 function simpleMovingAverage(slidingWindow: number[]) {
@@ -61,12 +67,10 @@ function simpleMovingAverage(slidingWindow: number[]) {
   return simpleAvg;
 }
 
-function exponentialMovingAverage(slidingWindow: number[], initialVal: number, newDataPoint: number){
-  const alpha = 0.6;
-  const EMA = alpha*newDataPoint+(1-alpha)*initialVal;
-  console.log(EMA);
+function exponentialMovingAverage(initialVal: number, newDataPoint: number) {
+  const alpha = 0.5;
+  const EMA = alpha * newDataPoint + (1 - alpha) * initialVal;
   return EMA;
-
 }
 
 // process to add data to a filteredSmoothedArray:

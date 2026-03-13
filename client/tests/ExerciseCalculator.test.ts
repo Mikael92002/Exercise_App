@@ -1,7 +1,11 @@
 import { NormalizedLandmark } from "@mediapipe/tasks-vision";
 import { ExerciseCalculator } from "../src/components/ExerciseCalculator";
 import { beforeEach, jest, test, describe, it, expect } from "@jest/globals";
-import { addToSlidingWindow, movingAverage, findMedian } from "../src/utils/functions";
+import {
+  addToSlidingWindow,
+  movingAverage,
+  findMedian,
+} from "../src/utils/functions";
 
 describe("ExerciseCalculator tests", () => {
   let calc: ExerciseCalculator;
@@ -102,27 +106,39 @@ describe("filter tests", () => {
   });
 });
 
-describe("smoothing tests", ()=>{
-  it("Should output the correct simple moving average at each index", ()=>{
+describe("smoothing tests", () => {
+  it("Should output the correct simple moving average at each index", () => {
     const incomingData = [10, 19, 16, 22, 20, 21, 25, 28, 26, 30];
     const slidingWindow: number[] = [];
     let lastAvg = 0;
-    for(let i = 0;i<incomingData.length;i++){
+    for (let i = 0; i < incomingData.length; i++) {
       addToSlidingWindow(incomingData[i], slidingWindow);
       lastAvg = movingAverage(slidingWindow, lastAvg, incomingData[i]);
-      if(i === 0){
+      if (i === 0) {
         expect(lastAvg).toBe(10);
       }
-      if(i === 1){
+      if (i === 1) {
         expect(lastAvg).toBe(14.5);
       }
-      if(i === 2){
+      if (i === 2) {
         expect(lastAvg).toBe(15);
       }
-      // if(i === 4){
-      //   expect(lastAvg).toBe(17.4);
-      // }
       // exponentialMovingAverage starts:
     }
-  })
-})
+  });
+
+  it("should stabilize (smooth) value of result after multiple similar data points", () => {
+    const incomingData = [
+      10, 19, 16, 22, 20, 21, 25, 28, 26, 30, 31, 30, 29, 30, 31, 30, 29, 30,
+      31,
+    ];
+    const slidingWindow: number[] = [];
+    let smoothedValue = 0;
+    for (let i = 0; i < incomingData.length; i++) {
+      addToSlidingWindow(incomingData[i], slidingWindow);
+
+      smoothedValue = movingAverage(slidingWindow, smoothedValue, incomingData[i]);
+    }
+    expect(smoothedValue).toBeCloseTo(30, .01);
+  });
+});
