@@ -1,7 +1,7 @@
 import { NormalizedLandmark } from "@mediapipe/tasks-vision";
 import { ExerciseCalculator } from "../src/components/ExerciseCalculator";
 import { beforeEach, jest, test, describe, it, expect } from "@jest/globals";
-import { addToSlidingWindow, findMedian } from "../src/utils/functions";
+import { addToSlidingWindow, exponentialMovingAverage, findMedian } from "../src/utils/functions";
 
 describe("ExerciseCalculator tests", () => {
   let calc: ExerciseCalculator;
@@ -36,7 +36,7 @@ describe("ExerciseCalculator tests", () => {
   });
 });
 
-describe("filter and smoothing tests", () => {
+describe("filter tests", () => {
   it("should find the median in an array", () => {
     const evenArr = [6, 12, 9, 3, 18, 15];
     expect(findMedian(evenArr)).toBe(10.5);
@@ -79,26 +79,49 @@ describe("filter and smoothing tests", () => {
     expect(slidingWindow[4]).toBe(30);
   });
 
-  it("should provide a correct median filter", ()=>{
+  it("should provide a correct median filter", () => {
     const incomingData = [10, 19, 16, 22, 20, 21, 25, 28, 26, 30];
 
     const slidingWindow: number[] = [];
-    for(let i = 0;i<incomingData.length;i++){
+    for (let i = 0; i < incomingData.length; i++) {
       addToSlidingWindow(incomingData[i], slidingWindow);
       const median = findMedian(slidingWindow);
-      if(i === 0){
-        expect(median).toBe(10)
+      if (i === 0) {
+        expect(median).toBe(10);
       }
-      if(i === 3){
+      if (i === 3) {
         expect(median).toBe(17.5);
       }
-      if(i === 4){
+      if (i === 4) {
         expect(median).toBe(19);
       }
-      if(i === 9){
+      if (i === 9) {
         expect(median).toBe(26);
       }
     }
     expect(findMedian(slidingWindow)).toBe(26);
-  })
+  });
 });
+
+describe("smoothing tests", ()=>{
+  it("Should output the correct simple moving average at each index", ()=>{
+    const incomingData = [10, 19, 16, 22, 20, 21, 25, 28, 26, 30];
+    const slidingWindow: number[] = [];
+    for(let i = 0;i<5;i++){
+      addToSlidingWindow(incomingData[i], slidingWindow);
+      const avg = exponentialMovingAverage(slidingWindow);
+      if(i === 0){
+        expect(avg).toBe(10);
+      }
+      if(i === 1){
+        expect(avg).toBe(14.5);
+      }
+      if(i === 2){
+        expect(avg).toBe(15);
+      }
+      if(i === 4){
+        expect(avg).toBe(17.4)
+      }
+    }
+  })
+})

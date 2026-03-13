@@ -38,3 +38,13 @@ export function addToSlidingWindow(
   return slidingWindow;
 }
 
+export function exponentialMovingAverage(slidingWindow: number[]){
+  // for first 5 data points, do a simple moving average:
+  if(slidingWindow.length<=5){
+    const initial = 0;
+    const simpleSum = slidingWindow.reduce((total, current)=> total+current, initial);
+    const simpleAvg = simpleSum/slidingWindow.length;
+    return simpleAvg;
+  }
+  return 0;
+}
