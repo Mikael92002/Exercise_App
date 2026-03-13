@@ -1,7 +1,7 @@
 import { NormalizedLandmark } from "@mediapipe/tasks-vision";
 import { ExerciseCalculator } from "../src/components/ExerciseCalculator";
 import { beforeEach, jest, test, describe, it, expect } from "@jest/globals";
-import { addToSlidingWindow, exponentialMovingAverage, findMedian } from "../src/utils/functions";
+import { addToSlidingWindow, movingAverage, findMedian } from "../src/utils/functions";
 
 describe("ExerciseCalculator tests", () => {
   let calc: ExerciseCalculator;
@@ -49,12 +49,11 @@ describe("filter tests", () => {
   });
 
   const globalArr = [13, 15, 12, 16];
-  it("should mutate global array", () => {
+  it("should not mutate global array", () => {
     findMedian(globalArr);
-    expect(globalArr).toEqual([12, 13, 15, 16]);
+    expect(globalArr).toEqual([13, 15, 12, 16]);
   });
 
-  const slidingWindow = [];
   it("should build up a sliding window from length 0 to max length 5", () => {
     const incomingData = [10, 19, 16, 22, 20, 21, 25, 28, 26, 30];
 
@@ -107,21 +106,23 @@ describe("smoothing tests", ()=>{
   it("Should output the correct simple moving average at each index", ()=>{
     const incomingData = [10, 19, 16, 22, 20, 21, 25, 28, 26, 30];
     const slidingWindow: number[] = [];
-    for(let i = 0;i<5;i++){
+    let lastAvg = 0;
+    for(let i = 0;i<incomingData.length;i++){
       addToSlidingWindow(incomingData[i], slidingWindow);
-      const avg = exponentialMovingAverage(slidingWindow);
+      lastAvg = movingAverage(slidingWindow, lastAvg, incomingData[i]);
       if(i === 0){
-        expect(avg).toBe(10);
+        expect(lastAvg).toBe(10);
       }
       if(i === 1){
-        expect(avg).toBe(14.5);
+        expect(lastAvg).toBe(14.5);
       }
       if(i === 2){
-        expect(avg).toBe(15);
+        expect(lastAvg).toBe(15);
       }
-      if(i === 4){
-        expect(avg).toBe(17.4)
-      }
+      // if(i === 4){
+      //   expect(lastAvg).toBe(17.4);
+      // }
+      // exponentialMovingAverage starts:
     }
   })
 })

@@ -14,15 +14,16 @@ export function findMedian(arr: number[]) {
   if (arr.length === 0) {
     return [];
   }
-  arr = arr.sort((a, b) => a - b);
+  let filteredArr = [...arr];
+  filteredArr = filteredArr.sort((a, b) => a - b);
 
   // even arr:
-  if (arr.length % 2 == 0) {
-    return (arr[arr.length / 2] + arr[arr.length / 2 - 1]) / 2;
+  if (filteredArr.length % 2 == 0) {
+    return (filteredArr[filteredArr.length / 2] + filteredArr[filteredArr.length / 2 - 1]) / 2;
   }
   // odd arr:
   else {
-    return arr[Math.floor(arr.length / 2)];
+    return filteredArr[Math.floor(filteredArr.length / 2)];
   }
 }
 
@@ -38,13 +39,38 @@ export function addToSlidingWindow(
   return slidingWindow;
 }
 
-export function exponentialMovingAverage(slidingWindow: number[]){
+// the sliding window in this function's arg should
+// be median filtered:
+export function movingAverage(slidingWindow: number[], initialVal: number, newDataPoint: number) {
   // for first 5 data points, do a simple moving average:
-  if(slidingWindow.length<=5){
-    const initial = 0;
-    const simpleSum = slidingWindow.reduce((total, current)=> total+current, initial);
-    const simpleAvg = simpleSum/slidingWindow.length;
-    return simpleAvg;
+  // use a 'seeded?' boolean in actual code:
+  if (slidingWindow.length < 4) {
+    return simpleMovingAverage(slidingWindow);
   }
-  return 0;
+
+  return exponentialMovingAverage(slidingWindow, initialVal, newDataPoint);
 }
+
+function simpleMovingAverage(slidingWindow: number[]) {
+  const initial = 0;
+  const simpleSum = slidingWindow.reduce(
+    (total, current) => total + current,
+    initial,
+  );
+  const simpleAvg = simpleSum / slidingWindow.length;
+  return simpleAvg;
+}
+
+function exponentialMovingAverage(slidingWindow: number[], initialVal: number, newDataPoint: number){
+  const alpha = 0.6;
+  const EMA = alpha*newDataPoint+(1-alpha)*initialVal;
+  console.log(EMA);
+  return EMA;
+
+}
+
+// process to add data to a filteredSmoothedArray:
+// push to global noisy slidingWindow array
+// findMedian on the array
+// then exponentialMovingAverage on the array
+// push the resultant value into a new array
