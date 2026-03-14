@@ -14,6 +14,7 @@ export class ExerciseCalculator {
   angle: number;
   distanceArray: number[];
   filteredSmoothedAngle: number;
+  filteredSmoothedDistance: number;
   filteredSlidingWindow: number[];
 
   constructor(exercise: KeyType) {
@@ -22,6 +23,7 @@ export class ExerciseCalculator {
     this.angle = -1;
     this.distanceArray = [0, 0, 0];
     this.filteredSmoothedAngle = 0;
+    this.filteredSmoothedDistance = 0;
     this.filteredSlidingWindow = [];
   }
 
@@ -59,10 +61,10 @@ export class ExerciseCalculator {
   }
 
   // DISTANCE-BASED METHOD:
-  calculateWristShoulderRatio(filteredLandMarksArr: NormalizedLandmark[]) {
-    const elbow = filteredLandMarksArr[1];
-    const shoulder = filteredLandMarksArr[2];
-    const wrist = filteredLandMarksArr[3];
+  calculateWristShoulderRatio(filteredWorldLandmarkArr: NormalizedLandmark[]) {
+    const elbow = filteredWorldLandmarkArr[1];
+    const shoulder = filteredWorldLandmarkArr[2];
+    const wrist = filteredWorldLandmarkArr[0];
 
     const upperArmLength = Math.hypot(
       shoulder.x - elbow.x,
@@ -85,18 +87,43 @@ export class ExerciseCalculator {
     return ratio;
   }
 
-  filterAngle(slidingWindow: number[]) {
+  #filterAngle(slidingWindow: number[]) {
     const filteredAngle = findMedian(slidingWindow);
     addToSlidingWindow(filteredAngle, this.filteredSlidingWindow);
     return filteredAngle;
   }
 
-  smoothAngle() {
+  #smoothAngle() {
     this.filteredSmoothedAngle = movingAverage(
       this.filteredSlidingWindow,
       this.filteredSmoothedAngle,
       this.filteredSlidingWindow[this.filteredSlidingWindow.length - 1],
     );
     return this.filteredSmoothedAngle;
+  }
+
+  filterAndSmoothAngle(slidingWindow: number[]){
+    this.#filterAngle(slidingWindow);
+    this.#smoothAngle();
+  }
+
+  #filterDistance(slidingWindow: number[]) {
+    const filteredDistance = findMedian(slidingWindow);
+    addToSlidingWindow(filteredDistance, this.filteredSlidingWindow);
+    return filteredDistance;
+  }
+
+  #smoothDistance() {
+    this.filteredSmoothedDistance = movingAverage(
+      this.filteredSlidingWindow,
+      this.filteredSmoothedDistance,
+      this.filteredSlidingWindow[this.filteredSlidingWindow.length - 1],
+    );
+    return this.filteredSmoothedDistance;
+  }
+
+  filterAndSmoothDistance(slidingWindow: number[]){
+    this.#filterDistance(slidingWindow);
+    this.#smoothDistance();
   }
 }

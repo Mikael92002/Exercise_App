@@ -3,7 +3,12 @@ import type { EnumObjType } from "../types/types";
 export function ExerciseEnum() {
   const enumObj: EnumObjType = {
     "Left Bicep Curl": {
-      states: { "state 0": 160, "state 2": 40 } as const,
+      states: {
+        "angleState 0": 160,
+        "angleState 2": 40,
+        "distanceState 0": 0.9,
+        "distanceState 2": 0.67,
+      } as const,
       landmarks: [11, 13, 15],
     },
   } as const;
@@ -31,10 +36,7 @@ export function findMedian(arr: number[]) {
   }
 }
 
-export function addToSlidingWindow(
-  angle: number,
-  slidingWindow: number[],
-) {
+export function addToSlidingWindow(angle: number, slidingWindow: number[]) {
   // from global sliding window:
   if (slidingWindow.length === 5) {
     slidingWindow.shift();
@@ -51,7 +53,7 @@ export function movingAverage(
   newDataPoint: number,
 ) {
   // for first 5 data points, do a simple moving average:
-  if (slidingWindow.length<5) {
+  if (slidingWindow.length < 5) {
     return simpleMovingAverage(slidingWindow);
   }
   return exponentialMovingAverage(initialVal, newDataPoint);

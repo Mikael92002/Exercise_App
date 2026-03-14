@@ -17,7 +17,7 @@ export class ExerciseLogic {
     this.reps = 0;
   }
 
-  stateUpdateLoop() {
+  stateUpdateLoopAngle() {
     // console.log(this.state);
     // based off of bicep curl:
     // state 0: resting/ around 160 deg
@@ -30,9 +30,9 @@ export class ExerciseLogic {
     // concentric case:
     if (
       this.exerciseCalculator.filteredSmoothedAngle <
-        this.exerciseCalculator.states["state 0"] &&
+        this.exerciseCalculator.states["angleState 0"] &&
       this.exerciseCalculator.filteredSmoothedAngle >
-        this.exerciseCalculator.states["state 2"] &&
+        this.exerciseCalculator.states["angleState 2"] &&
       this.state === 0
     ) {
       this.state = 1;
@@ -40,7 +40,7 @@ export class ExerciseLogic {
     // eccentric case:
     if (
       this.exerciseCalculator.filteredSmoothedAngle <
-        this.exerciseCalculator.states["state 2"] &&
+        this.exerciseCalculator.states["angleState 2"] &&
       this.state === 1
     ) {
       this.state = 2;
@@ -48,12 +48,40 @@ export class ExerciseLogic {
     // rep complete case:
     if (
       this.exerciseCalculator.filteredSmoothedAngle >
-        this.exerciseCalculator.states["state 0"] &&
+        this.exerciseCalculator.states["angleState 0"] &&
       this.state === 2
     ) {
       this.reps++;
       this.state = 0;
     }
-    // resting case:
+  }
+
+  stateUpdateLoopDistance() {
+    if (
+      this.exerciseCalculator.filteredSmoothedDistance <
+        this.exerciseCalculator.states["distanceState 0"] &&
+      this.exerciseCalculator.filteredSmoothedDistance >
+        this.exerciseCalculator.states["distanceState 2"] &&
+      this.state === 0
+    ) {
+      this.state = 1;
+    }
+    // eccentric case:
+    if (
+      this.exerciseCalculator.filteredSmoothedDistance <
+        this.exerciseCalculator.states["distanceState 2"] &&
+      this.state === 1
+    ) {
+      this.state = 2;
+    }
+    // rep complete case:
+    if (
+      this.exerciseCalculator.filteredSmoothedDistance >
+        this.exerciseCalculator.states["distanceState 0"] &&
+      this.state === 2
+    ) {
+      this.reps++;
+      this.state = 0;
+    }
   }
 }

@@ -3,8 +3,10 @@ import type { Landmark } from "@mediapipe/tasks-vision";
 export type KeyType = "Left Bicep Curl";
 
 export type StateType = {
-  "state 0": number;
-  "state 2": number;
+  "angleState 0": number;
+  "angleState 2": number;
+  "distanceState 0": number;
+  "distanceState 2": number
 };
 export type LandmarkType = Number[];
 

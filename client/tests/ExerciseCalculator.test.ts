@@ -35,8 +35,8 @@ describe("ExerciseCalculator tests", () => {
   it("should have correct state object key-values", () => {
     expect(calc.states).toHaveProperty("state 0");
     expect(calc.states).toHaveProperty("state 2");
-    expect(calc.states["state 0"]).toBe(160);
-    expect(calc.states["state 2"]).toBe(50);
+    expect(calc.states["angleState 0"]).toBe(160);
+    expect(calc.states["angleState 2"]).toBe(50);
   });
 });
 

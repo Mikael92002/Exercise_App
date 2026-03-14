@@ -31,6 +31,7 @@ const PoseCamController = () => {
   const [camEnabled, setCamEnabled] = useState(false);
   const [displayReps, setDisplayReps] = useState(0);
   const [displayAngle, setDisplayAngle] = useState(180);
+  const [displayDistance, setDisplayDistance] = useState(1);
 
   // need to run only once to determine if user has permissions:
   const hasGetUserMedia = useMemo(
@@ -110,21 +111,25 @@ const PoseCamController = () => {
 
             if (checkLandmarkVisibilityByThreshold(filteredLandmarkArr, 0.8)) {
               ExerciseCalculatorRef.current?.calculateDistances(
-                filteredLandmarkArr,
+                filteredWorldLandmarkArr,
               );
+              // const unfilteredRatio =
+              //   ExerciseCalculatorRef.current?.calculateWristShoulderRatio(
+              //     filteredWorldLandmarkArr,
+              //   );
               // raw angle:
               const angle = ExerciseCalculatorRef.current?.calculateAngle();
+
               // add to global sliding window:
               addToSlidingWindow(angle!, slidingWindow.current);
-              // returns median filtered angle and adds to internal filteredArr:
-              ExerciseCalculatorRef.current?.filterAngle(
+              // addToSlidingWindow(unfilteredRatio!, slidingWindow.current);
+
+              ExerciseCalculatorRef.current?.filterAndSmoothAngle(
                 slidingWindow.current,
-              )!;
-              // ONLY returns smoothed (does not add to internal filteredArr):
-              ExerciseCalculatorRef.current?.smoothAngle()!;
+              );
 
               // state machine:
-              ExerciseLogicRef.current?.stateUpdateLoop();
+              ExerciseLogicRef.current?.stateUpdateLoopAngle();
 
               const newRepCount = ExerciseLogicRef.current?.reps;
               if (newRepCount !== displayReps) {
@@ -133,6 +138,9 @@ const PoseCamController = () => {
               setDisplayAngle(
                 ExerciseCalculatorRef.current?.filteredSmoothedAngle!,
               );
+              // setDisplayDistance(
+              //   ExerciseCalculatorRef.current?.filteredSmoothedDistance!,
+              // );
 
               // console.log(
               //   `landmark Z: ${filteredLandmarkArr[2].z}.
