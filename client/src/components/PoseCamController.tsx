@@ -10,11 +10,7 @@ import { createPoseLandmarker } from "./Pose";
 import styles from "../css modules/PoseCamController.module.css";
 import { ExerciseCalculator } from "./ExerciseCalculator";
 import { ExerciseLogic } from "./ExerciseLogic";
-import {
-  addToSlidingWindow,
-  findMedian,
-  movingAverage,
-} from "../utils/functions";
+import { addToSlidingWindow } from "../utils/functions";
 import RepMachine from "./RepMachine";
 
 const PoseCamController = () => {
@@ -97,17 +93,25 @@ const PoseCamController = () => {
         canvasCtx.save();
         canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
 
-        //results.landmarks = [[33 landmark objs]]
         // landmark = [33 landmark objs]
         if (results.landmarks) {
-          for (const landmark of results.landmarks) {
-            const filteredArr = filterLandmarksByLandmarks(
-              landmark,
+          for (let i = 0; i < results.landmarks.length; i++) {
+            const landmarkArr = results.landmarks[i];
+            const worldLandmarkArr = results.worldLandmarks[i];
+
+            const filteredLandmarkArr = filterLandmarksByLandmarks(
+              landmarkArr,
+              [11, 13, 15],
+            );
+            const filteredWorldLandmarkArr = filterLandmarksByLandmarks(
+              worldLandmarkArr,
               [11, 13, 15],
             );
 
-            if (checkLandmarkVisibilityByThreshold(filteredArr, 0.8)) {
-              ExerciseCalculatorRef.current?.calculateDistances(filteredArr);
+            if (checkLandmarkVisibilityByThreshold(filteredLandmarkArr, 0.8)) {
+              ExerciseCalculatorRef.current?.calculateDistances(
+                filteredLandmarkArr,
+              );
               // raw angle:
               const angle = ExerciseCalculatorRef.current?.calculateAngle();
               // add to global sliding window:
@@ -122,12 +126,6 @@ const PoseCamController = () => {
               // state machine:
               ExerciseLogicRef.current?.stateUpdateLoop();
 
-              // console.log(
-              //   "unfiltered angle: " +
-              //     angle +
-              //     " filtered angle: " +
-              //     ExerciseCalculatorRef.current?.filteredSmoothedAngle,
-              // );
               const newRepCount = ExerciseLogicRef.current?.reps;
               if (newRepCount !== displayReps) {
                 setDisplayReps(newRepCount!);
@@ -135,21 +133,30 @@ const PoseCamController = () => {
               setDisplayAngle(
                 ExerciseCalculatorRef.current?.filteredSmoothedAngle!,
               );
+
+              // console.log(
+              //   `landmark Z: ${filteredLandmarkArr[2].z}.
+              //   worldLandmark Z: ${filteredWorldLandmarkArr[2].z}`,
+              // );
+              console.log(
+                `filtered: ${ExerciseCalculatorRef.current?.filteredSmoothedAngle}`,
+              );
+              console.log(ExerciseLogicRef.current?.state);
             }
 
-            drawingUtils.drawLandmarks(filteredArr, {
+            drawingUtils.drawLandmarks(filteredLandmarkArr, {
               radius: (data) =>
                 DrawingUtils.lerp(data.from!.z, -0.15, 0.1, 5, 1),
               color: "red",
             });
             drawingUtils.drawConnectors(
-              filteredArr,
+              filteredLandmarkArr,
               PoseLandmarker.POSE_CONNECTIONS,
             );
           }
         }
         canvasCtx.restore();
-        // results.landmarks contains:
+        // results contains:
         // {landmarks: [[[33 landmark objs]]],
         // worldLandmarks: [[[33 landmark objs]]]}
       }
@@ -232,7 +239,9 @@ const PoseCamController = () => {
                 <RepMachine angle={displayAngle}></RepMachine>
               </div>
               <div className={styles.state_display_container}>
-                <button onClick={() => console.log(displayAngle)}>disp angle</button>
+                <button onClick={() => console.log(displayAngle)}>
+                  disp angle
+                </button>
               </div>
             </div>
           )}

@@ -3,7 +3,7 @@ import type { EnumObjType } from "../types/types";
 export function ExerciseEnum() {
   const enumObj: EnumObjType = {
     "Left Bicep Curl": {
-      states: { "state 0": 160, "state 2": 45 } as const,
+      states: { "state 0": 160, "state 2": 40 } as const,
       landmarks: [11, 13, 15],
     },
   } as const;

@@ -25,6 +25,8 @@ export class ExerciseCalculator {
     this.filteredSlidingWindow = [];
   }
 
+  // ANGLE-BASED METHOD:
+
   // pass in filtered landmark array from poseLandmarker:
   calculateDistances(landmarkArr: NormalizedLandmark[]) {
     const A = landmarkArr[0];
@@ -54,6 +56,33 @@ export class ExerciseCalculator {
     this.angle = angle;
 
     return angle;
+  }
+
+  // DISTANCE-BASED METHOD:
+  calculateWristShoulderRatio(filteredLandMarksArr: NormalizedLandmark[]) {
+    const elbow = filteredLandMarksArr[1];
+    const shoulder = filteredLandMarksArr[2];
+    const wrist = filteredLandMarksArr[3];
+
+    const upperArmLength = Math.hypot(
+      shoulder.x - elbow.x,
+      shoulder.y - elbow.y,
+      shoulder.z - elbow.z,
+    );
+    const lowerArmLength = Math.hypot(
+      wrist.x - elbow.x,
+      wrist.y - elbow.y,
+      wrist.z - elbow.z,
+    );
+    const distance = Math.hypot(
+      shoulder.x - wrist.x,
+      shoulder.y - wrist.y,
+      shoulder.z - wrist.z,
+    );
+    const totalLength = upperArmLength + lowerArmLength;
+
+    const ratio = distance / totalLength;
+    return ratio;
   }
 
   filterAngle(slidingWindow: number[]) {
