@@ -1,0 +1,23 @@
+.main_container{
+    height: 200px;
+    width: 10px;
+    border: 1px solid black;
+    position: relative;
+    border-radius: 20px;
+}
+
+.state_bar{
+    position: absolute;
+    height: 20px;
+    width: 10px;
+    background-color: rgb(0, 247, 255);
+    border-radius: 20px;
+}
+/* Programatically select sweet spot top property: */
+.sweet_spot_bar{
+    position: absolute;
+    background-color: rgba(0, 128, 0, 0.47);
+    height: 20px;
+    width: 10px;
+    border-radius: 20px;
+}

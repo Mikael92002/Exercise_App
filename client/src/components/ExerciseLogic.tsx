@@ -1,5 +1,4 @@
 // state machine class
-import type { KeyType } from "../types/types";
 import { ExerciseCalculator } from "./ExerciseCalculator";
 
 export class ExerciseLogic {
@@ -19,7 +18,7 @@ export class ExerciseLogic {
   }
 
   stateUpdateLoop() {
-    console.log(this.state);
+    // console.log(this.state);
     // based off of bicep curl:
     // state 0: resting/ around 160 deg
     // state 1: between 180 and 60 deg (concentric)

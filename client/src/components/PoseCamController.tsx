@@ -15,6 +15,7 @@ import {
   findMedian,
   movingAverage,
 } from "../utils/functions";
+import RepMachine from "./RepMachine";
 
 const PoseCamController = () => {
   const landmarkerRef = useRef<PoseLandmarker | null>(null);
@@ -33,6 +34,7 @@ const PoseCamController = () => {
   const [noCam, setNoCam] = useState<boolean>(false);
   const [camEnabled, setCamEnabled] = useState(false);
   const [displayReps, setDisplayReps] = useState(0);
+  const [displayAngle, setDisplayAngle] = useState(180);
 
   // need to run only once to determine if user has permissions:
   const hasGetUserMedia = useMemo(
@@ -111,18 +113,28 @@ const PoseCamController = () => {
               // add to global sliding window:
               addToSlidingWindow(angle!, slidingWindow.current);
               // returns median filtered angle and adds to internal filteredArr:
-              ExerciseCalculatorRef.current?.filterAngle(slidingWindow.current)!;
+              ExerciseCalculatorRef.current?.filterAngle(
+                slidingWindow.current,
+              )!;
               // ONLY returns smoothed (does not add to internal filteredArr):
               ExerciseCalculatorRef.current?.smoothAngle()!;
 
               // state machine:
               ExerciseLogicRef.current?.stateUpdateLoop();
 
-              console.log("unfiltered angle: " + angle + " filtered angle: " + ExerciseCalculatorRef.current?.filteredSmoothedAngle);
+              // console.log(
+              //   "unfiltered angle: " +
+              //     angle +
+              //     " filtered angle: " +
+              //     ExerciseCalculatorRef.current?.filteredSmoothedAngle,
+              // );
               const newRepCount = ExerciseLogicRef.current?.reps;
               if (newRepCount !== displayReps) {
                 setDisplayReps(newRepCount!);
               }
+              setDisplayAngle(
+                ExerciseCalculatorRef.current?.filteredSmoothedAngle!,
+              );
             }
 
             drawingUtils.drawLandmarks(filteredArr, {
@@ -213,10 +225,14 @@ const PoseCamController = () => {
             {camEnabled ? "Disable Cam" : "Enable Cam"}
           </button>
           {camEnabled && (
-            <div className={styles.webcam_canvas_container}>
-              <div>
+            <div className={styles.action_container}>
+              <div className={styles.webcam_canvas_container}>
                 <ClientWebcam camRef={webcamRef} setNoCam={setNoCam} />
                 <canvas ref={canvasRef}></canvas>
+                <RepMachine angle={displayAngle}></RepMachine>
+              </div>
+              <div className={styles.state_display_container}>
+                <button onClick={() => console.log(displayAngle)}>disp angle</button>
               </div>
             </div>
           )}

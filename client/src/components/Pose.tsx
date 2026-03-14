@@ -11,6 +11,6 @@ export const createPoseLandmarker = async () => {
       delegate: "GPU",
     },
     runningMode: "VIDEO",
-    minTrackingConfidence: 0.5,
+    minPoseDetectionConfidence: 0.7,
   });
 };
