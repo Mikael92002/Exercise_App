@@ -2,10 +2,8 @@ import styles from "../css modules/RepMachine.module.css";
 
 const RepMachine = ({
   angle,
-  distance,
 }: {
   angle: number;
-  distance?: number;
 }) => {
   // 160 is placeholder, replace with max threshold of current exercise
   const angleAsMultiplier = angle / 180;

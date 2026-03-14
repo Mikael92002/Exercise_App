@@ -108,10 +108,9 @@ const PoseCamController = () => {
               worldLandmarkArr,
               [11, 13, 15],
             );
-
             if (checkLandmarkVisibilityByThreshold(filteredLandmarkArr, 0.8)) {
               ExerciseCalculatorRef.current?.calculateDistances(
-                filteredWorldLandmarkArr,
+                filteredLandmarkArr,
               );
               // const unfilteredRatio =
               //   ExerciseCalculatorRef.current?.calculateWristShoulderRatio(
@@ -127,9 +126,13 @@ const PoseCamController = () => {
               ExerciseCalculatorRef.current?.filterAndSmoothAngle(
                 slidingWindow.current,
               );
+              // ExerciseCalculatorRef.current?.filterAndSmoothDistance(
+              //   slidingWindow.current,
+              // );
 
               // state machine:
               ExerciseLogicRef.current?.stateUpdateLoopAngle();
+              // ExerciseLogicRef.current?.stateUpdateLoopDistance();
 
               const newRepCount = ExerciseLogicRef.current?.reps;
               if (newRepCount !== displayReps) {

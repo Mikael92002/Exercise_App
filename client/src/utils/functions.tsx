@@ -3,12 +3,14 @@ import type { EnumObjType } from "../types/types";
 export function ExerciseEnum() {
   const enumObj: EnumObjType = {
     "Left Bicep Curl": {
+      // mod thresholds when right arm is visible:
+      // 12, 14, 16: set angleState 0 to 140, angleState 2 to 105...
       states: {
         "angleState 0": 160,
-        "angleState 2": 40,
+        "angleState 2": 45,
         "distanceState 0": 0.9,
         "distanceState 2": 0.67,
-      } as const,
+      },
       landmarks: [11, 13, 15],
     },
   } as const;

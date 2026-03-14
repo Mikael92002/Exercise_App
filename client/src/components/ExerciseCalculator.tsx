@@ -35,11 +35,17 @@ export class ExerciseCalculator {
     const B = landmarkArr[1];
     const C = landmarkArr[2];
     // AB: 12 to 14
-    const AB = Math.sqrt(Math.pow(B.x - A.x, 2) + Math.pow(B.y - A.y, 2));
+    const AB = Math.sqrt(
+      Math.pow(B.x - A.x, 2) + Math.pow(B.y - A.y, 2),
+    );
     //BC: 14 to 16
-    const BC = Math.sqrt(Math.pow(B.x - C.x, 2) + Math.pow(B.y - C.y, 2));
+    const BC = Math.sqrt(
+      Math.pow(B.x - C.x, 2) + Math.pow(B.y - C.y, 2),
+    );
     //AC: 12 to 16
-    const AC = Math.sqrt(Math.pow(C.x - A.x, 2) + Math.pow(C.y - A.y, 2));
+    const AC = Math.sqrt(
+      Math.pow(C.x - A.x, 2) + Math.pow(C.y - A.y, 2),
+    );
 
     const distances = [AB, BC, AC];
     this.distanceArray = distances;
@@ -102,7 +108,7 @@ export class ExerciseCalculator {
     return this.filteredSmoothedAngle;
   }
 
-  filterAndSmoothAngle(slidingWindow: number[]){
+  filterAndSmoothAngle(slidingWindow: number[]) {
     this.#filterAngle(slidingWindow);
     this.#smoothAngle();
   }
@@ -122,7 +128,7 @@ export class ExerciseCalculator {
     return this.filteredSmoothedDistance;
   }
 
-  filterAndSmoothDistance(slidingWindow: number[]){
+  filterAndSmoothDistance(slidingWindow: number[]) {
     this.#filterDistance(slidingWindow);
     this.#smoothDistance();
   }
