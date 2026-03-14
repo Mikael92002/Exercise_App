@@ -1,5 +1,3 @@
-import type { Landmark } from "@mediapipe/tasks-vision";
-
 export type KeyType = "Left Bicep Curl";
 
 export type StateType = {
