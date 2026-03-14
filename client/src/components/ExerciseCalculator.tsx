@@ -63,8 +63,8 @@ export class ExerciseCalculator {
   // DISTANCE-BASED METHOD:
   calculateWristShoulderRatio(filteredWorldLandmarkArr: NormalizedLandmark[]) {
     const elbow = filteredWorldLandmarkArr[1];
-    const shoulder = filteredWorldLandmarkArr[2];
-    const wrist = filteredWorldLandmarkArr[0];
+    const shoulder = filteredWorldLandmarkArr[0];
+    const wrist = filteredWorldLandmarkArr[2];
 
     const upperArmLength = Math.hypot(
       shoulder.x - elbow.x,
