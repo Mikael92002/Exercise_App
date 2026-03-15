@@ -1,3 +1,4 @@
+import type { NormalizedLandmark } from "@mediapipe/tasks-vision";
 import type { EnumObjType } from "../types/types";
 
 export function ExerciseEnum() {
@@ -8,8 +9,8 @@ export function ExerciseEnum() {
       states: {
         "angleState 0": 160,
         "angleState 2": 45,
-        "distanceState 0": 0.9,
-        "distanceState 2": 0.67,
+        "distanceState 0": 0.95,
+        "distanceState 2": 0.63,
       },
       landmarks: [11, 13, 15],
     },
@@ -82,3 +83,39 @@ function exponentialMovingAverage(initialVal: number, newDataPoint: number) {
 // findMedian on the array
 // then exponentialMovingAverage on the array
 // push the resultant value into a new array
+
+export function filterLandmarksByVisibility(
+  landmarks: NormalizedLandmark[],
+  targetVisibility: number,
+) {
+  const filteredArr: NormalizedLandmark[] = [];
+  for (const landmark of landmarks) {
+    if (landmark.visibility >= targetVisibility) {
+      filteredArr.push(landmark);
+    }
+  }
+  return filteredArr;
+}
+
+export function filterLandmarksByLandmarks(
+  landmarks: NormalizedLandmark[],
+  targetLandmarks: number[],
+) {
+  const filteredArr: NormalizedLandmark[] = [];
+  for (let i = 0; i < targetLandmarks.length; i++) {
+    filteredArr.push(landmarks[targetLandmarks[i]]);
+  }
+  return filteredArr;
+}
+
+export function checkLandmarkVisibilityByThreshold(
+  landmarks: NormalizedLandmark[],
+  targetVisibility: number,
+) {
+  for (let landmark of landmarks) {
+    if (landmark.visibility < targetVisibility) {
+      return false;
+    }
+  }
+  return true;
+}

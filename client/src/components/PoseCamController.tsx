@@ -1,8 +1,4 @@
-import {
-  PoseLandmarker,
-  DrawingUtils,
-  type NormalizedLandmark,
-} from "@mediapipe/tasks-vision";
+import { PoseLandmarker, DrawingUtils } from "@mediapipe/tasks-vision";
 import ClientWebcam from "./ClientWebcam";
 import { useState, useRef, useMemo, useEffect, useCallback } from "react";
 import Webcam from "react-webcam";
@@ -10,8 +6,9 @@ import { createPoseLandmarker } from "./Pose";
 import styles from "../css modules/PoseCamController.module.css";
 import { ExerciseCalculator } from "./ExerciseCalculator";
 import { ExerciseLogic } from "./ExerciseLogic";
-import { addToSlidingWindow } from "../utils/functions";
+import { filterLandmarksByLandmarks } from "../utils/functions";
 import RepMachine from "./RepMachine";
+import { FormCorrector } from "./FormCorrector";
 
 const PoseCamController = () => {
   const landmarkerRef = useRef<PoseLandmarker | null>(null);
@@ -24,7 +21,7 @@ const PoseCamController = () => {
   const lastVideoTimeRef = useRef<number>(-1);
   const ExerciseCalculatorRef = useRef<ExerciseCalculator | null>(null);
   const ExerciseLogicRef = useRef<ExerciseLogic | null>(null);
-  const slidingWindow = useRef<number[]>([]);
+  const FormCorrectorRef = useRef<FormCorrector | null>(null);
   // track landmarker loading:
   const [isLoaded, setIsLoaded] = useState(false);
   const [noCam, setNoCam] = useState<boolean>(false);
@@ -50,8 +47,12 @@ const PoseCamController = () => {
       landmarkerRef.current = landMarker;
       const exerciseCalc = new ExerciseCalculator("Left Bicep Curl");
       const exerciseLogic = new ExerciseLogic(exerciseCalc);
+      const formCorrector = new FormCorrector(
+        exerciseLogic.exercise as KeyType,
+      );
       ExerciseCalculatorRef.current = exerciseCalc;
       ExerciseLogicRef.current = exerciseLogic;
+      FormCorrectorRef.current = formCorrector;
       setIsLoaded(true);
     }
     init();
@@ -100,70 +101,52 @@ const PoseCamController = () => {
             const landmarkArr = results.landmarks[i];
             const worldLandmarkArr = results.worldLandmarks[i];
 
-            const filteredLandmarkArr = filterLandmarksByLandmarks(
-              landmarkArr,
-              [11, 13, 15],
-            );
-            const filteredWorldLandmarkArr = filterLandmarksByLandmarks(
-              worldLandmarkArr,
-              [11, 13, 15],
-            );
-            if (checkLandmarkVisibilityByThreshold(filteredLandmarkArr, 0.8)) {
-              ExerciseCalculatorRef.current?.calculateDistances(
-                filteredLandmarkArr,
+            const formCheck = FormCorrectorRef.current?.correctForm(worldLandmarkArr);
+
+            if (formCheck?.result) {
+              const filteredLandmarkArr = filterLandmarksByLandmarks(
+                landmarkArr,
+                [11, 13, 15],
               );
-              // const unfilteredRatio =
-              //   ExerciseCalculatorRef.current?.calculateWristShoulderRatio(
-              //     filteredWorldLandmarkArr,
-              //   );
-              // raw angle:
-              const angle = ExerciseCalculatorRef.current?.calculateAngle();
-
-              // add to global sliding window:
-              addToSlidingWindow(angle!, slidingWindow.current);
-              // addToSlidingWindow(unfilteredRatio!, slidingWindow.current);
-
-              ExerciseCalculatorRef.current?.filterAndSmoothAngle(
-                slidingWindow.current,
+              const filteredWorldLandmarkArr = filterLandmarksByLandmarks(
+                worldLandmarkArr,
+                [11, 13, 15, 12, 14, 16],
               );
-              // ExerciseCalculatorRef.current?.filterAndSmoothDistance(
-              //   slidingWindow.current,
-              // );
 
-              // state machine:
-              ExerciseLogicRef.current?.stateUpdateLoopAngle();
-              // ExerciseLogicRef.current?.stateUpdateLoopDistance();
+              ExerciseLogicRef.current?.acceptCoordsAndUpdateState(
+                filteredWorldLandmarkArr,
+              );
 
               const newRepCount = ExerciseLogicRef.current?.reps;
               if (newRepCount !== displayReps) {
                 setDisplayReps(newRepCount!);
               }
-              setDisplayAngle(
-                ExerciseCalculatorRef.current?.filteredSmoothedAngle!,
+              setDisplayDistance(
+                ExerciseCalculatorRef.current?.filteredSmoothedDistance!,
               );
-              // setDisplayDistance(
-              //   ExerciseCalculatorRef.current?.filteredSmoothedDistance!,
-              // );
 
               // console.log(
               //   `landmark Z: ${filteredLandmarkArr[2].z}.
               //   worldLandmark Z: ${filteredWorldLandmarkArr[2].z}`,
               // );
               console.log(
-                `filtered: ${ExerciseCalculatorRef.current?.filteredSmoothedAngle}`,
+                `filtered: ${ExerciseCalculatorRef.current?.filteredSmoothedDistance}`,
               );
               console.log(ExerciseLogicRef.current?.state);
-            }
 
-            drawingUtils.drawLandmarks(filteredLandmarkArr, {
-              radius: (data) =>
-                DrawingUtils.lerp(data.from!.z, -0.15, 0.1, 5, 1),
-              color: "red",
-            });
-            drawingUtils.drawConnectors(
-              filteredLandmarkArr,
-              PoseLandmarker.POSE_CONNECTIONS,
-            );
+              drawingUtils.drawLandmarks(filteredLandmarkArr, {
+                radius: (data) =>
+                  DrawingUtils.lerp(data.from!.z, -0.15, 0.1, 5, 1),
+                color: "red",
+              });
+              drawingUtils.drawConnectors(
+                filteredLandmarkArr,
+                PoseLandmarker.POSE_CONNECTIONS,
+              );
+            }
+            else{
+
+            }
           }
         }
         canvasCtx.restore();
@@ -193,42 +176,6 @@ const PoseCamController = () => {
     } else {
       cancelAnimationFrame(animationRef.current);
     }
-  }
-
-  function filterLandmarksByVisibility(
-    landmarks: NormalizedLandmark[],
-    targetVisibility: number,
-  ) {
-    const filteredArr: NormalizedLandmark[] = [];
-    for (const landmark of landmarks) {
-      if (landmark.visibility >= targetVisibility) {
-        filteredArr.push(landmark);
-      }
-    }
-    return filteredArr;
-  }
-
-  function filterLandmarksByLandmarks(
-    landmarks: NormalizedLandmark[],
-    targetLandmarks: number[],
-  ) {
-    const filteredArr: NormalizedLandmark[] = [];
-    for (let i = 0; i < targetLandmarks.length; i++) {
-      filteredArr.push(landmarks[targetLandmarks[i]]);
-    }
-    return filteredArr;
-  }
-
-  function checkLandmarkVisibilityByThreshold(
-    landmarks: NormalizedLandmark[],
-    targetVisibility: number,
-  ) {
-    for (let landmark of landmarks) {
-      if (landmark.visibility < targetVisibility) {
-        return false;
-      }
-    }
-    return true;
   }
 
   return (

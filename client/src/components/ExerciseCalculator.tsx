@@ -3,6 +3,7 @@ import type { KeyType, LandmarkType, StateType } from "../types/types";
 import {
   addToSlidingWindow,
   ExerciseEnum,
+  filterLandmarksByVisibility,
   findMedian,
   movingAverage,
 } from "../utils/functions";
@@ -16,6 +17,7 @@ export class ExerciseCalculator {
   filteredSmoothedAngle: number;
   filteredSmoothedDistance: number;
   filteredSlidingWindow: number[];
+  exercise: string;
 
   constructor(exercise: KeyType) {
     this.states = this.enumObj[exercise]["states"];
@@ -25,6 +27,7 @@ export class ExerciseCalculator {
     this.filteredSmoothedAngle = 0;
     this.filteredSmoothedDistance = 0;
     this.filteredSlidingWindow = [];
+    this.exercise = exercise;
   }
 
   // ANGLE-BASED METHOD:
@@ -35,17 +38,11 @@ export class ExerciseCalculator {
     const B = landmarkArr[1];
     const C = landmarkArr[2];
     // AB: 12 to 14
-    const AB = Math.sqrt(
-      Math.pow(B.x - A.x, 2) + Math.pow(B.y - A.y, 2),
-    );
+    const AB = Math.sqrt(Math.pow(B.x - A.x, 2) + Math.pow(B.y - A.y, 2));
     //BC: 14 to 16
-    const BC = Math.sqrt(
-      Math.pow(B.x - C.x, 2) + Math.pow(B.y - C.y, 2),
-    );
+    const BC = Math.sqrt(Math.pow(B.x - C.x, 2) + Math.pow(B.y - C.y, 2));
     //AC: 12 to 16
-    const AC = Math.sqrt(
-      Math.pow(C.x - A.x, 2) + Math.pow(C.y - A.y, 2),
-    );
+    const AC = Math.sqrt(Math.pow(C.x - A.x, 2) + Math.pow(C.y - A.y, 2));
 
     const distances = [AB, BC, AC];
     this.distanceArray = distances;
@@ -68,29 +65,52 @@ export class ExerciseCalculator {
 
   // DISTANCE-BASED METHOD:
   calculateWristShoulderRatio(filteredWorldLandmarkArr: NormalizedLandmark[]) {
-    const elbow = filteredWorldLandmarkArr[1];
-    const shoulder = filteredWorldLandmarkArr[0];
-    const wrist = filteredWorldLandmarkArr[2];
+    // depending on whether user is looking straight or to their side,
+    // choose ratio accordingly.
+    // will receive right arm and left arm landmarks
 
-    const upperArmLength = Math.hypot(
-      shoulder.x - elbow.x,
-      shoulder.y - elbow.y,
-      shoulder.z - elbow.z,
-    );
-    const lowerArmLength = Math.hypot(
-      wrist.x - elbow.x,
-      wrist.y - elbow.y,
-      wrist.z - elbow.z,
-    );
-    const distance = Math.hypot(
-      shoulder.x - wrist.x,
-      shoulder.y - wrist.y,
-      shoulder.z - wrist.z,
-    );
-    const totalLength = upperArmLength + lowerArmLength;
+    switch (this.exercise) {
+      case "Left Bicep Curl":
+        // change ratios if right arm visible
+        const rightShoulder = filteredWorldLandmarkArr[3];
+        const rightElbow = filteredWorldLandmarkArr[4];
+        const rightWrist = filteredWorldLandmarkArr[5];
 
-    const ratio = distance / totalLength;
-    return ratio;
+        if (
+          filterLandmarksByVisibility(
+            [rightShoulder, rightElbow, rightWrist],
+            0.9,
+          ).length > 0
+        ) {
+          this.states["distanceState 2"] = 0.73
+        }
+        else{
+          this.states["distanceState 2"] = 0.63
+        }
+        const elbow = filteredWorldLandmarkArr[1];
+        const shoulder = filteredWorldLandmarkArr[0];
+        const wrist = filteredWorldLandmarkArr[2];
+
+        const upperArmLength = Math.hypot(
+          shoulder.x - elbow.x,
+          shoulder.y - elbow.y,
+          shoulder.z - elbow.z,
+        );
+        const lowerArmLength = Math.hypot(
+          wrist.x - elbow.x,
+          wrist.y - elbow.y,
+          wrist.z - elbow.z,
+        );
+        const distance = Math.hypot(
+          shoulder.x - wrist.x,
+          shoulder.y - wrist.y,
+          shoulder.z - wrist.z,
+        );
+        const totalLength = upperArmLength + lowerArmLength;
+
+        const ratio = distance / totalLength;
+        return ratio;
+    }
   }
 
   #filterAngle(slidingWindow: number[]) {

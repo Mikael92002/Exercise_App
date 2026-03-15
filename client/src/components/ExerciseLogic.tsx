@@ -1,4 +1,9 @@
 // state machine class
+import type { NormalizedLandmark } from "@mediapipe/tasks-vision";
+import {
+  addToSlidingWindow,
+  checkLandmarkVisibilityByThreshold,
+} from "../utils/functions";
 import { ExerciseCalculator } from "./ExerciseCalculator";
 
 export class ExerciseLogic {
@@ -6,6 +11,8 @@ export class ExerciseLogic {
   currAngle: number; // get from separate "ExerciseCalculator" class
   exerciseCalculator: ExerciseCalculator;
   reps: number;
+  exercise: string;
+  globalSlidingWindow: number[];
 
   // landmarks for bicep curl:
   // right arm: 12 (shoulder), 14(elbow), 16 (wrist, maybe)
@@ -13,12 +20,13 @@ export class ExerciseLogic {
 
   constructor(exerciseCalculator: ExerciseCalculator) {
     this.exerciseCalculator = exerciseCalculator;
+    this.exercise = this.exerciseCalculator.exercise;
     this.currAngle = -1;
     this.reps = 0;
+    this.globalSlidingWindow = [];
   }
 
   stateUpdateLoopAngle() {
-    // console.log(this.state);
     // based off of bicep curl:
     // state 0: resting/ around 160 deg
     // state 1: between 180 and 60 deg (concentric)
@@ -56,7 +64,7 @@ export class ExerciseLogic {
     }
   }
 
-  stateUpdateLoopDistance() {
+  #stateUpdateLoopDistance() {
     if (
       this.exerciseCalculator.filteredSmoothedDistance <
         this.exerciseCalculator.states["distanceState 0"] &&
@@ -83,5 +91,20 @@ export class ExerciseLogic {
       this.reps++;
       this.state = 0;
     }
+  }
+
+  #acceptCoordsLoop(coords: NormalizedLandmark[]) {
+    const unfilteredRatio =
+      this.exerciseCalculator.calculateWristShoulderRatio(coords);
+
+    addToSlidingWindow(unfilteredRatio!, this.globalSlidingWindow);
+
+    this.exerciseCalculator.filterAndSmoothDistance(this.globalSlidingWindow);
+  }
+
+  acceptCoordsAndUpdateState(coords: NormalizedLandmark[]) {
+    // Might need to change depending on exercise:
+    this.#acceptCoordsLoop(coords);
+    this.#stateUpdateLoopDistance();
   }
 }
