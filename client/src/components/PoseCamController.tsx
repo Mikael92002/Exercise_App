@@ -56,7 +56,7 @@ const PoseCamController = () => {
       const exerciseCalc = new ExerciseCalculator("Left Bicep Curl");
       const exerciseLogic = new ExerciseLogic(exerciseCalc);
       const formCorrector = new FormCorrector(
-        exerciseLogic.exercise as KeyType,
+        exerciseLogic.exercise,
       );
       ExerciseCalculatorRef.current = exerciseLogic.exerciseCalculator;
       ExerciseLogicRef.current = exerciseLogic;

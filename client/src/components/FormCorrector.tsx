@@ -3,7 +3,7 @@ import { filterLandmarksByVisibility } from "../utils/functions";
 
 export class FormCorrector {
   exercise: string;
-  constructor(exercise: KeyType) {
+  constructor(exercise: string) {
     this.exercise = exercise;
   }
 
@@ -20,7 +20,7 @@ export class FormCorrector {
         0.8,
       );
       if (leftArmArr.length !== 3) {
-        console.log("left arm")
+        console.log("left arm");
         result = false;
         msgArr.push("Left arm should be visible");
       }
@@ -31,7 +31,7 @@ export class FormCorrector {
       );
       console.log(rightShoulderArr);
       if (rightShoulderArr.length === 3) {
-        console.log("right arm")
+        console.log("right arm");
         result = false;
         msgArr.push("Right arm should not be visible");
       }
