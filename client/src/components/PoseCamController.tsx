@@ -33,7 +33,6 @@ const PoseCamController = () => {
   const [camEnabled, setCamEnabled] = useState(false);
   const [displayReps, setDisplayReps] = useState(0);
   const [displayAngle, setDisplayAngle] = useState(180);
-  const [displayDistance, setDisplayDistance] = useState(1);
   const [modalErrors, setModalErrors] = useState<string[]>([]);
 
   const sweetSpot = useMemo(() => {

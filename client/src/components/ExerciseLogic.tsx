@@ -2,7 +2,6 @@
 import type { NormalizedLandmark } from "@mediapipe/tasks-vision";
 import {
   addToSlidingWindow,
-  checkLandmarkVisibilityByThreshold,
 } from "../utils/functions";
 import { ExerciseCalculator } from "./ExerciseCalculator";
 
