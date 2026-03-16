@@ -22,7 +22,7 @@ A real-time, browser-based exercise tracker that uses a webcam and Google MediaP
 3. Push-Up \*
 4. Squat \*
 
-## \*: In development
+### \*: In development
 
 ## How It Works
 
