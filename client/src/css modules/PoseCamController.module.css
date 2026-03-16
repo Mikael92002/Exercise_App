@@ -8,6 +8,14 @@
     justify-content: center;
 }
 
+.startButton{
+    background-color: aqua;
+    color: white;
+    border-radius: 20px;
+    margin-top: 5px;
+    font-weight: 900;
+}
+
 canvas, video{
     position: absolute;
     top: 0;

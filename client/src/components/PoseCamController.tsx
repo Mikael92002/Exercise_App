@@ -206,33 +206,35 @@ const PoseCamController = () => {
 
   return (
     <div className={styles.main_container}>
-      <div className={styles.rep_counter}>Reps: {displayReps}</div>
       {!isLoaded && <p>Loading poseLandmarker</p>}
       {noCam ? (
         <p>No camera access found.</p>
       ) : (
         <>
-          <button onClick={toggleCam}>
-            {camEnabled ? "Disable Cam" : "Enable Cam"}
+          <button onClick={toggleCam} className={styles.startButton}>
+            {camEnabled ? "Finish Workout" : "Start Workout"}
           </button>
           {camEnabled && (
-            <div className={styles.action_container}>
-              <div className={styles.webcam_canvas_container}>
-                <ClientWebcam camRef={webcamRef} setNoCam={setNoCam} />
-                <canvas ref={canvasRef}></canvas>
-                <RepMachine
-                  angle={displayAngle}
-                  sweetSpot={sweetSpot}
-                ></RepMachine>
-                {modalIsOpenRef.current && (
-                  <FormModal
-                    modalSize={modalSizingStyle}
-                    errors={modalErrors}
-                  ></FormModal>
-                )}
+            <>
+              <div className={styles.rep_counter}>Reps: {displayReps}</div>
+              <div className={styles.action_container}>
+                <div className={styles.webcam_canvas_container}>
+                  <ClientWebcam camRef={webcamRef} setNoCam={setNoCam} />
+                  <canvas ref={canvasRef}></canvas>
+                  <RepMachine
+                    angle={displayAngle}
+                    sweetSpot={sweetSpot}
+                  ></RepMachine>
+                  {modalIsOpenRef.current && (
+                    <FormModal
+                      modalSize={modalSizingStyle}
+                      errors={modalErrors}
+                    ></FormModal>
+                  )}
+                </div>
+                <div className={styles.state_display_container}></div>
               </div>
-              <div className={styles.state_display_container}></div>
-            </div>
+            </>
           )}
         </>
       )}
