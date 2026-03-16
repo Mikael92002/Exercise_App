@@ -17,22 +17,21 @@ A real-time, browser-based exercise tracker that uses a webcam and Google MediaP
 
 ## Supported Exercises
 
-| Exercise | Detection Method | Key Landmarks |
-|---|---|---|
-| Left Bicep Curl | Wrist-shoulder distance ratio | Left shoulder, elbow, wrist |
-| Right Bicep Curl | Wrist-shoulder distance ratio | Right shoulder, elbow, wrist | &#x2605
-| Push-Up | Elbow angle | Shoulder, elbow, wrist (both sides) | &#x2605
-| Squat | Knee angle | Hip, knee, ankle (both sides) | &#x2605
+1. Left Bicep Curl
+2. Right Bicep Curl \*
+3. Push-Up \*
+4. Squat \*
 
-&#x2605: In development
----
+## \*: In development
 
 ## How It Works
 
 ### Pose Detection
+
 MediaPipe's `PoseLandmarker` model runs on the webcam via `requestAnimationFrame`. It outputs 33 landmarks in both screen-space (`landmarks`) and 3D space (`worldLandmarks`). In this application, the 3D world landmarks are used for all angle and distance calculations to stay invariant to camera distance and position.
 
 ### Rep Counting (State Machine)
+
 Each exercise uses a 3-state machine:
 
 ```
@@ -42,7 +41,9 @@ State 0 (Rest) -> State 1 (Concentric) -> State 2 (Eccentric) -> State 0 + rep++
 Transitions are triggered by crossing configurable angle/distance thresholds defined per exercise in `ExerciseEnum`.
 
 ### Signal Processing
+
 Raw landmark coordinates are noisy so each frame's computed angle or ratio is:
+
 1. Added to a **sliding window** (last N frames)
 2. **Median filtered** to remove outlier spikes
 3. **Linearly/Exponentially smoothed** (moving average) to smooth data
@@ -50,6 +51,7 @@ Raw landmark coordinates are noisy so each frame's computed angle or ratio is:
 This makes rep counting more robust under imperfect lighting or fast movement.
 
 ### Form Correction
+
 `FormCorrector` checks each frame for exercise-specific visibility and positioning rules. If a violation is detected (e.g. wrong side of body facing camera, arm out of frame), a modal overlay appears with a correction message. Processing is paused until form is corrected.
 
 ---
@@ -66,6 +68,7 @@ This makes rep counting more robust under imperfect lighting or fast movement.
 ## Installation
 
 ### Prerequisites
+
 - Node.js 18+
 - A webcam
 - A modern browser (Chrome or Edge recommended for best MediaPipe performance)
