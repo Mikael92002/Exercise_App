@@ -12,6 +12,7 @@ export const createPoseLandmarker = async () => {
     },
     runningMode: "VIDEO",
     minPoseDetectionConfidence: 0.7,
-    minTrackingConfidence: 0.1,
+    minTrackingConfidence: 0.8,
+    minPosePresenceConfidence: 0.8,
   });
 };

@@ -8,7 +8,6 @@ import { ExerciseCalculator } from "./ExerciseCalculator";
 
 export class ExerciseLogic {
   state: number = 0;
-  currAngle: number; // get from separate "ExerciseCalculator" class
   exerciseCalculator: ExerciseCalculator;
   reps: number;
   exercise: string;
@@ -21,12 +20,11 @@ export class ExerciseLogic {
   constructor(exerciseCalculator: ExerciseCalculator) {
     this.exerciseCalculator = exerciseCalculator;
     this.exercise = this.exerciseCalculator.exercise;
-    this.currAngle = -1;
     this.reps = 0;
     this.globalSlidingWindow = [];
   }
 
-  stateUpdateLoopAngle() {
+  #stateUpdateLoopAngle() {
     // based off of bicep curl:
     // state 0: resting/ around 160 deg
     // state 1: between 180 and 60 deg (concentric)
@@ -106,5 +104,17 @@ export class ExerciseLogic {
     // Might need to change depending on exercise:
     this.#acceptCoordsLoop(coords);
     this.#stateUpdateLoopDistance();
+  }
+
+  #acceptCoordsLoopAngle(worldLandmarks: NormalizedLandmark[]) {
+    this.exerciseCalculator.calculateDistances(worldLandmarks);
+    const angle = this.exerciseCalculator.calculateAngle();
+    addToSlidingWindow(angle, this.globalSlidingWindow);
+    this.exerciseCalculator.filterAndSmoothAngle(this.globalSlidingWindow);
+  }
+
+  acceptCoordsAndUpdateStateAngle(worldLandmarks: NormalizedLandmark[]) {
+    this.#acceptCoordsLoopAngle(worldLandmarks);
+    this.#stateUpdateLoopAngle();
   }
 }

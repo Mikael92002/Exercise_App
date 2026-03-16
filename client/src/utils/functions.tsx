@@ -7,10 +7,10 @@ export function ExerciseEnum() {
       // mod thresholds when right arm is visible:
       // 12, 14, 16: set angleState 0 to 140, angleState 2 to 105...
       states: {
-        "angleState 0": 160,
-        "angleState 2": 45,
+        "angleState 0": 140,
+        "angleState 2": 75,
         "distanceState 0": 0.95,
-        "distanceState 2": 0.63,
+        "distanceState 2": 0.65,
       },
       landmarks: [11, 13, 15],
     },
@@ -56,7 +56,7 @@ export function movingAverage(
   newDataPoint: number,
 ) {
   // for first 5 data points, do a simple moving average:
-  if (slidingWindow.length < 5) {
+  if (slidingWindow.length < 10) {
     return simpleMovingAverage(slidingWindow);
   }
   return exponentialMovingAverage(initialVal, newDataPoint);
@@ -73,7 +73,7 @@ function simpleMovingAverage(slidingWindow: number[]) {
 }
 
 function exponentialMovingAverage(initialVal: number, newDataPoint: number) {
-  const alpha = 0.5;
+  const alpha = 0.8;
   const EMA = alpha * newDataPoint + (1 - alpha) * initialVal;
   return EMA;
 }

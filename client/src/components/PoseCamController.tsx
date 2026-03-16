@@ -9,6 +9,10 @@ import { ExerciseLogic } from "./ExerciseLogic";
 import { filterLandmarksByLandmarks } from "../utils/functions";
 import RepMachine from "./RepMachine";
 import { FormCorrector } from "./FormCorrector";
+import FormModal from "./FormModal";
+import Modal from "react-modal";
+
+Modal.setAppElement("#root");
 
 const PoseCamController = () => {
   const landmarkerRef = useRef<PoseLandmarker | null>(null);
@@ -22,6 +26,7 @@ const PoseCamController = () => {
   const ExerciseCalculatorRef = useRef<ExerciseCalculator | null>(null);
   const ExerciseLogicRef = useRef<ExerciseLogic | null>(null);
   const FormCorrectorRef = useRef<FormCorrector | null>(null);
+  const modalIsOpenRef = useRef<boolean>(false);
   // track landmarker loading:
   const [isLoaded, setIsLoaded] = useState(false);
   const [noCam, setNoCam] = useState<boolean>(false);
@@ -29,7 +34,11 @@ const PoseCamController = () => {
   const [displayReps, setDisplayReps] = useState(0);
   const [displayAngle, setDisplayAngle] = useState(180);
   const [displayDistance, setDisplayDistance] = useState(1);
+  const [modalErrors, setModalErrors] = useState<string[]>([]);
 
+  const sweetSpot = useMemo(() => {
+    return ExerciseCalculatorRef.current?.states["angleState 2"];
+  }, [ExerciseCalculatorRef.current?.states["angleState 2"]]);
   // need to run only once to determine if user has permissions:
   const hasGetUserMedia = useMemo(
     () => !!navigator.mediaDevices?.getUserMedia,
@@ -50,7 +59,7 @@ const PoseCamController = () => {
       const formCorrector = new FormCorrector(
         exerciseLogic.exercise as KeyType,
       );
-      ExerciseCalculatorRef.current = exerciseCalc;
+      ExerciseCalculatorRef.current = exerciseLogic.exerciseCalculator;
       ExerciseLogicRef.current = exerciseLogic;
       FormCorrectorRef.current = formCorrector;
       setIsLoaded(true);
@@ -63,6 +72,14 @@ const PoseCamController = () => {
       if (animationRef.current) cancelAnimationFrame(animationRef.current);
     };
   }, []);
+
+  function closeModal() {
+    modalIsOpenRef.current = false;
+  }
+
+  function openModal() {
+    modalIsOpenRef.current = true;
+  }
 
   // main loop:
   const predictWebcam = useCallback(() => {
@@ -101,9 +118,13 @@ const PoseCamController = () => {
             const landmarkArr = results.landmarks[i];
             const worldLandmarkArr = results.worldLandmarks[i];
 
-            const formCheck = FormCorrectorRef.current?.correctForm(worldLandmarkArr);
+            const formCheck =
+              FormCorrectorRef.current?.correctForm(landmarkArr);
 
             if (formCheck?.result) {
+              if (modalIsOpenRef.current) {
+                closeModal();
+              }
               const filteredLandmarkArr = filterLandmarksByLandmarks(
                 landmarkArr,
                 [11, 13, 15],
@@ -113,7 +134,7 @@ const PoseCamController = () => {
                 [11, 13, 15, 12, 14, 16],
               );
 
-              ExerciseLogicRef.current?.acceptCoordsAndUpdateState(
+              ExerciseLogicRef.current?.acceptCoordsAndUpdateStateAngle(
                 filteredWorldLandmarkArr,
               );
 
@@ -121,8 +142,9 @@ const PoseCamController = () => {
               if (newRepCount !== displayReps) {
                 setDisplayReps(newRepCount!);
               }
-              setDisplayDistance(
-                ExerciseCalculatorRef.current?.filteredSmoothedDistance!,
+
+              setDisplayAngle(
+                ExerciseCalculatorRef.current?.filteredSmoothedAngle!,
               );
 
               // console.log(
@@ -130,9 +152,8 @@ const PoseCamController = () => {
               //   worldLandmark Z: ${filteredWorldLandmarkArr[2].z}`,
               // );
               console.log(
-                `filtered: ${ExerciseCalculatorRef.current?.filteredSmoothedDistance}`,
+                `filtered: ${ExerciseCalculatorRef.current?.filteredSmoothedAngle}`,
               );
-              console.log(ExerciseLogicRef.current?.state);
 
               drawingUtils.drawLandmarks(filteredLandmarkArr, {
                 radius: (data) =>
@@ -143,9 +164,9 @@ const PoseCamController = () => {
                 filteredLandmarkArr,
                 PoseLandmarker.POSE_CONNECTIONS,
               );
-            }
-            else{
-
+            } else {
+              openModal();
+              setModalErrors(formCheck?.messages!);
             }
           }
         }
@@ -178,6 +199,11 @@ const PoseCamController = () => {
     }
   }
 
+  const modalSizingStyle = {
+    height: webcamRef.current?.video?.videoHeight || 0,
+    width: webcamRef.current?.video?.videoWidth || 0,
+  };
+
   return (
     <div className={styles.main_container}>
       <div className={styles.rep_counter}>Reps: {displayReps}</div>
@@ -194,13 +220,18 @@ const PoseCamController = () => {
               <div className={styles.webcam_canvas_container}>
                 <ClientWebcam camRef={webcamRef} setNoCam={setNoCam} />
                 <canvas ref={canvasRef}></canvas>
-                <RepMachine angle={displayAngle}></RepMachine>
+                <RepMachine
+                  angle={displayAngle}
+                  sweetSpot={sweetSpot}
+                ></RepMachine>
+                {modalIsOpenRef.current && (
+                  <FormModal
+                    modalSize={modalSizingStyle}
+                    errors={modalErrors}
+                  ></FormModal>
+                )}
               </div>
-              <div className={styles.state_display_container}>
-                <button onClick={() => console.log(displayAngle)}>
-                  disp angle
-                </button>
-              </div>
+              <div className={styles.state_display_container}></div>
             </div>
           )}
         </>

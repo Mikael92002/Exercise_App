@@ -79,13 +79,14 @@ export class ExerciseCalculator {
         if (
           filterLandmarksByVisibility(
             [rightShoulder, rightElbow, rightWrist],
-            0.9,
-          ).length > 0
+            0.95,
+          ).length === 3
         ) {
-          this.states["distanceState 2"] = 0.73
+          console.log("right visible")
+          this.states["distanceState 2"] = 0.45
         }
         else{
-          this.states["distanceState 2"] = 0.63
+          this.states["distanceState 2"] = 0.65
         }
         const elbow = filteredWorldLandmarkArr[1];
         const shoulder = filteredWorldLandmarkArr[0];
@@ -94,17 +95,17 @@ export class ExerciseCalculator {
         const upperArmLength = Math.hypot(
           shoulder.x - elbow.x,
           shoulder.y - elbow.y,
-          shoulder.z - elbow.z,
+          // shoulder.z - elbow.z,
         );
         const lowerArmLength = Math.hypot(
           wrist.x - elbow.x,
           wrist.y - elbow.y,
-          wrist.z - elbow.z,
+          // wrist.z - elbow.z,
         );
         const distance = Math.hypot(
           shoulder.x - wrist.x,
           shoulder.y - wrist.y,
-          shoulder.z - wrist.z,
+          // shoulder.z - wrist.z,
         );
         const totalLength = upperArmLength + lowerArmLength;
 

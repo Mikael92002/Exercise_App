@@ -14,25 +14,26 @@ export class FormCorrector {
     let result = true;
     const msgArr: string[] = [];
     if (this.exercise === "Left Bicep Curl") {
-      // check if any point on
-      // upper face is visible:
-      const upperFaceArr = filterLandmarksByVisibility(
-        worldLandmarks.slice(0, 9),
-        0.8,
-      );
-      if (upperFaceArr.length === 0) {
-        result = false;
-        msgArr.push("At least one point on the face should be visible");
-      }
       // check if ALL points on left arm are visible:
       const leftArmArr = filterLandmarksByVisibility(
         [worldLandmarks[11], worldLandmarks[13], worldLandmarks[15]],
         0.8,
       );
-      console.log(leftArmArr);
       if (leftArmArr.length !== 3) {
+        console.log("left arm")
         result = false;
         msgArr.push("Left arm should be visible");
+      }
+      // right arm should not be visible
+      const rightShoulderArr = filterLandmarksByVisibility(
+        [worldLandmarks[12], worldLandmarks[14], worldLandmarks[16]],
+        0.8,
+      );
+      console.log(rightShoulderArr);
+      if (rightShoulderArr.length === 3) {
+        console.log("right arm")
+        result = false;
+        msgArr.push("Right arm should not be visible");
       }
     }
     return { result: result, messages: msgArr };

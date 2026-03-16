@@ -2,20 +2,24 @@ import styles from "../css modules/RepMachine.module.css";
 
 const RepMachine = ({
   angle,
+  sweetSpot,
 }: {
   angle: number;
+  sweetSpot: number | undefined;
 }) => {
   // 160 is placeholder, replace with max threshold of current exercise
   const angleAsMultiplier = angle / 180;
   // 200 is placeholder, replace with responsive height of .main_container:
   const angleTopValue = 180 - angleAsMultiplier * 180;
+  // const distanceTopValue = 200 - distance*200
+  const sweetSpotValue = 180 - sweetSpot!;
 
   const stateBarStyle = {
     top: `${angleTopValue}px`,
   };
   //   Programatically select:
   const sweetSpotBarStyle = {
-    top: `150px`,
+    top: `${sweetSpotValue}px`,
   };
   return (
     <div className={styles.main_container}>
