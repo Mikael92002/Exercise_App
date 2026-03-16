@@ -7,7 +7,7 @@ A real-time, browser-based exercise tracker that uses a webcam and Google MediaP
 ## Features
 
 - **Real-time pose estimation**: Via MediaPipe PoseLandmarker
-- **Rep counting**: Uses a 3-state finite state machine (resting → concentric → eccentric)
+- **Rep counting**: Uses a 3-state finite state machine (resting -> concentric -> eccentric)
 - **Form correction**: With live overlay messages when user's positioning is off
 - **Signal smoothing**: Via sliding window median filter + linear/exponential moving average, reducing noise from raw landmark detection
 - **Visual rep tracker**: An animated bar that moves with your joint angle so user can see exactly where they are in the rep
@@ -36,7 +36,7 @@ MediaPipe's `PoseLandmarker` model runs on the webcam via `requestAnimationFrame
 Each exercise uses a 3-state machine:
 
 ```
-State 0 (Rest) → State 1 (Concentric) → State 2 (Eccentric) → State 0 + rep++
+State 0 (Rest) -> State 1 (Concentric) -> State 2 (Eccentric) -> State 0 + rep++
 ```
 
 Transitions are triggered by crossing configurable angle/distance thresholds defined per exercise in `ExerciseEnum`.
