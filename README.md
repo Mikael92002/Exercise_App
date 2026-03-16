@@ -15,6 +15,10 @@ A real-time, browser-based exercise tracker that uses a webcam and Google MediaP
 
 ---
 
+## Live Demo
+
+---
+
 ## Supported Exercises
 
 1. Left Bicep Curl
