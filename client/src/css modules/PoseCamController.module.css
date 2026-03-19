@@ -1,51 +1,61 @@
-.main_container{
-    width: 100%;
-    height: 100%;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=block");
+
+.main_container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
-.startButton{
-    background-color: aqua;
-    color: white;
-    border-radius: 20px;
-    margin-top: 5px;
-    font-weight: 900;
+.startButton {
+  background-color: black;
+  border-radius: 5px;
+  color: white;
+  margin-bottom: 5px;
+  font-weight: 900;
 }
 
-canvas, video{
-    position: absolute;
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
+canvas,
+video {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
-canvas{
-    pointer-events: none;
-    overflow: hidden;
+canvas {
+  pointer-events: none;
+  overflow: hidden;
 }
 
-.webcam_canvas_container{
-    position: relative;
-    overflow: hidden;
-    width: 100%;
-    height: 100%;
+.webcam_canvas_container {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
 }
 
-.rep_counter{
-    padding: 0.5rem;
-    border-radius: 20px;
-  background-color: aqua;
+.rep_counter_container {
+  margin-bottom: 5px;
+  width: 100%;
+  display: flex;
+}
+
+.rep_counter {
   font-size: larger;
   color: white;
   font-family: sans-serif;
   font-weight: 900;
+  background-color: burlywood;
+  padding: 0rem 0.2rem;
+  margin-left: 0.15rem;
+  border-radius: 5px;
 }
 
-.action_container{
-    width: 100%;
-    height: 100%;
+.action_container {
+  width: 100%;
+  height: 100%;
 }

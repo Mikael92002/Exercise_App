@@ -53,14 +53,6 @@ const PoseCamController = () => {
     async function init() {
       const landMarker = await createPoseLandmarker();
       landmarkerRef.current = landMarker;
-      const exerciseCalc = new ExerciseCalculator("Left Bicep Curl");
-      const exerciseLogic = new ExerciseLogic(exerciseCalc);
-      const formCorrector = new FormCorrector(
-        exerciseLogic.exercise,
-      );
-      ExerciseCalculatorRef.current = exerciseLogic.exerciseCalculator;
-      ExerciseLogicRef.current = exerciseLogic;
-      FormCorrectorRef.current = formCorrector;
       setIsLoaded(true);
     }
     init();
@@ -179,23 +171,40 @@ const PoseCamController = () => {
     animationRef.current = requestAnimationFrame(predictWebcam);
   }, []);
 
+  // start/finish button clicks:
+  useEffect(() => {
+    function finishWorkout() {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+
+      ExerciseCalculatorRef.current = null;
+      ExerciseLogicRef.current = null;
+      FormCorrectorRef.current = null;
+    }
+    function startWorkout() {
+      animationRef.current = requestAnimationFrame(predictWebcam);
+      setDisplayAngle(180);
+      setDisplayReps(0);
+      setModalErrors([]);
+      const exerciseCalc = new ExerciseCalculator("Left Bicep Curl");
+      const exerciseLogic = new ExerciseLogic(exerciseCalc);
+      const formCorrector = new FormCorrector(exerciseLogic.exercise);
+      ExerciseCalculatorRef.current = exerciseLogic.exerciseCalculator;
+      ExerciseLogicRef.current = exerciseLogic;
+      FormCorrectorRef.current = formCorrector;
+    }
+    if (camEnabled) {
+      startWorkout();
+    }
+    return () => finishWorkout();
+  }, [camEnabled, predictWebcam]);
+
   // enable/disable cam:
   function toggleCam() {
     // poseLandmarker not ready yet/do not do anything:
     if (!landmarkerRef.current) return;
-
-    // toggle cam:
-    const nextState = !camEnabled;
-    setCamEnabled(nextState);
-
-    // if cam enabled, give some time for vid to start:
-    if (nextState) {
-      setTimeout(() => {
-        animationRef.current = requestAnimationFrame(predictWebcam);
-      }, 500);
-    } else {
-      cancelAnimationFrame(animationRef.current);
-    }
+    setCamEnabled(!camEnabled);
   }
 
   const modalSizingStyle = {
@@ -215,7 +224,9 @@ const PoseCamController = () => {
           </button>
           {camEnabled && (
             <>
-              <div className={styles.rep_counter}>Reps: {displayReps}</div>
+              <div className={styles.rep_counter_container}>
+                <div className={styles.rep_counter}>Reps: {displayReps}</div>
+              </div>
               <div className={styles.action_container}>
                 <div className={styles.webcam_canvas_container}>
                   <ClientWebcam camRef={webcamRef} setNoCam={setNoCam} />

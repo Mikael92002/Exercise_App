@@ -1,4 +1,5 @@
 import styles from "../css modules/FormModal.module.css";
+import bicepView from "../assets/bicep view.png"
 
 const FormModal = ({
   errors,
