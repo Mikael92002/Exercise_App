@@ -6,6 +6,7 @@ import {
   movingAverage,
   findMedian,
 } from "../src/utils/functions";
+import { CalibratorController } from "../src/components/CalibratorController";
 
 describe("ExerciseCalculator tests", () => {
   let calc: ExerciseCalculator;
@@ -33,10 +34,10 @@ describe("ExerciseCalculator tests", () => {
   });
 
   it("should have correct state object key-values", () => {
-    expect(calc.states).toHaveProperty("state 0");
-    expect(calc.states).toHaveProperty("state 2");
-    expect(calc.states["angleState 0"]).toBe(160);
-    expect(calc.states["angleState 2"]).toBe(50);
+    expect(calc.states).toHaveProperty("angleState 0");
+    expect(calc.states).toHaveProperty("angleState 2");
+    expect(calc.states["angleState 0"]).toBe(140);
+    expect(calc.states["angleState 2"]).toBe(75);
   });
 });
 
@@ -63,7 +64,7 @@ describe("filter tests", () => {
 
     const slidingWindow: number[] = [];
     for (let i = 0; i < incomingData.length; i++) {
-      addToSlidingWindow(incomingData[i], slidingWindow);
+      addToSlidingWindow(incomingData[i], slidingWindow, 5);
       if (i === 0) {
         expect(slidingWindow.length).toBe(1);
       }
@@ -87,7 +88,7 @@ describe("filter tests", () => {
 
     const slidingWindow: number[] = [];
     for (let i = 0; i < incomingData.length; i++) {
-      addToSlidingWindow(incomingData[i], slidingWindow);
+      addToSlidingWindow(incomingData[i], slidingWindow, 5);
       const median = findMedian(slidingWindow);
       if (i === 0) {
         expect(median).toBe(10);
@@ -112,7 +113,7 @@ describe("smoothing tests", () => {
     const slidingWindow: number[] = [];
     let lastAvg = 0;
     for (let i = 0; i < incomingData.length; i++) {
-      addToSlidingWindow(incomingData[i], slidingWindow);
+      addToSlidingWindow(incomingData[i], slidingWindow, 5);
       lastAvg = movingAverage(slidingWindow, lastAvg, incomingData[i]);
       if (i === 0) {
         expect(lastAvg).toBe(10);
@@ -135,10 +136,32 @@ describe("smoothing tests", () => {
     const slidingWindow: number[] = [];
     let smoothedValue = 0;
     for (let i = 0; i < incomingData.length; i++) {
-      addToSlidingWindow(incomingData[i], slidingWindow);
+      addToSlidingWindow(incomingData[i], slidingWindow, 5);
 
-      smoothedValue = movingAverage(slidingWindow, smoothedValue, incomingData[i]);
+      smoothedValue = movingAverage(
+        slidingWindow,
+        smoothedValue,
+        incomingData[i],
+      );
     }
-    expect(smoothedValue).toBeCloseTo(30, .01);
+    expect(smoothedValue).toBeCloseTo(30, 0.01);
   });
+});
+
+describe("Calibrator Tests", () => {
+  let calibratorController: CalibratorController;
+
+  beforeEach(() => {
+    calibratorController = new CalibratorController();
+  });
+
+  it("should have all properties set to false initially", () => {
+    expect(calibratorController.ready).toBe(false);
+    expect(calibratorController.stageOneComplete).toBe(false);
+    expect(calibratorController.stageTwoComplete).toBe(false);
+  });
+
+  it("should log ready and make ready property true", async () => {
+    expect(await calibratorController.calibrateLoop(1)).toBe(true);
+  }, 23000);
 });

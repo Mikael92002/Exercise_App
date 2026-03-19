@@ -116,7 +116,7 @@ export class ExerciseCalculator {
 
   #filterAngle(slidingWindow: number[]) {
     const filteredAngle = findMedian(slidingWindow);
-    addToSlidingWindow(filteredAngle, this.filteredSlidingWindow);
+    addToSlidingWindow(filteredAngle, this.filteredSlidingWindow, 5);
     return filteredAngle;
   }
 
@@ -136,7 +136,7 @@ export class ExerciseCalculator {
 
   #filterDistance(slidingWindow: number[]) {
     const filteredDistance = findMedian(slidingWindow);
-    addToSlidingWindow(filteredDistance, this.filteredSlidingWindow);
+    addToSlidingWindow(filteredDistance, this.filteredSlidingWindow, 5);
     return filteredDistance;
   }
 

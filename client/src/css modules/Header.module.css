@@ -1,0 +1,27 @@
+.title_container {
+  box-sizing: border-box;
+  display: flex;
+  justify-content: space-between;
+  font-family: sans-serif;
+  font-family: "Montserrat", sans-serif;
+  padding-left: 0.5rem;
+  padding-top: 0.25rem;
+  margin-bottom: 1rem;
+  background-color: beige;
+}
+
+.title_ai {
+  font-weight: 700;
+}
+
+.links > button {
+  color: black;
+  background-color: beige;
+  border: none;
+  font-weight: 600;
+  font-family: 'Roboto';
+}
+
+.links > :not(:last-child) {
+  border-right: 1px solid black;
+}

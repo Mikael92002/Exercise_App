@@ -39,9 +39,9 @@ export function findMedian(arr: number[]) {
   }
 }
 
-export function addToSlidingWindow(angle: number, slidingWindow: number[]) {
+export function addToSlidingWindow(angle: number, slidingWindow: number[], windowSize: number) {
   // from global sliding window:
-  if (slidingWindow.length === 5) {
+  if (slidingWindow.length === windowSize) {
     slidingWindow.shift();
   }
   slidingWindow.push(angle);

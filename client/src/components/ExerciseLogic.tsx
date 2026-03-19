@@ -94,7 +94,7 @@ export class ExerciseLogic {
     const unfilteredRatio =
       this.exerciseCalculator.calculateWristShoulderRatio(coords);
 
-    addToSlidingWindow(unfilteredRatio!, this.globalSlidingWindow);
+    addToSlidingWindow(unfilteredRatio!, this.globalSlidingWindow, 5);
 
     this.exerciseCalculator.filterAndSmoothDistance(this.globalSlidingWindow);
   }
@@ -108,7 +108,7 @@ export class ExerciseLogic {
   #acceptCoordsLoopAngle(worldLandmarks: NormalizedLandmark[]) {
     this.exerciseCalculator.calculateDistances(worldLandmarks);
     const angle = this.exerciseCalculator.calculateAngle();
-    addToSlidingWindow(angle, this.globalSlidingWindow);
+    addToSlidingWindow(angle, this.globalSlidingWindow, 5);
     this.exerciseCalculator.filterAndSmoothAngle(this.globalSlidingWindow);
   }
 
