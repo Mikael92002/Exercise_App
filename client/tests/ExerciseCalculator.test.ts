@@ -6,7 +6,7 @@ import {
   movingAverage,
   findMedian,
 } from "../src/utils/functions";
-import { CalibratorController } from "../src/components/CalibratorController";
+import { CalibratorLogic } from "../src/components/CalibratorLogic";
 
 describe("ExerciseCalculator tests", () => {
   let calc: ExerciseCalculator;
@@ -149,10 +149,10 @@ describe("smoothing tests", () => {
 });
 
 describe("Calibrator Tests", () => {
-  let calibratorController: CalibratorController;
+  let calibratorController: CalibratorLogic;
 
   beforeEach(() => {
-    calibratorController = new CalibratorController();
+    calibratorController = new CalibratorLogic();
   });
 
   it("should have all properties set to false initially", () => {

@@ -220,7 +220,7 @@ const PoseCamController = () => {
       ) : (
         <>
           <button onClick={toggleCam} className={styles.startButton}>
-            {camEnabled ? "Finish Workout" : "Start Workout"}
+            {camEnabled ? "FINISH WORKOUT" : "START WORKOUT"}
           </button>
           {camEnabled && (
             <>
