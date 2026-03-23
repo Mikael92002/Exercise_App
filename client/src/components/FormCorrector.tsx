@@ -37,8 +37,8 @@ export class FormCorrector {
         : leftArmSlidingWindow.add(false);
 
       if (
-        this.#checkBufferPercentage(leftArmSlidingWindow.array) < 0.7 &&
-        leftArmSlidingWindow.size >= this.#bufferSize
+        leftArmSlidingWindow.getTrueRatio() < 0.7 &&
+        leftArmSlidingWindow.isFull()
       ) {
         console.log("left arm");
         result = false;
@@ -56,8 +56,8 @@ export class FormCorrector {
         : rightArmSlidingWindow.add(false);
 
       if (
-        this.#checkBufferPercentage(rightArmSlidingWindow.array) > 0.7 &&
-        rightArmSlidingWindow.size >= this.#bufferSize
+        rightArmSlidingWindow.getTrueRatio() > 0.7 &&
+        rightArmSlidingWindow.isFull()
       ) {
         console.log("right arm");
         result = false;
@@ -65,15 +65,5 @@ export class FormCorrector {
       }
     }
     return { result: result, messages: msgArr };
-  }
-
-  #checkBufferPercentage(booleanArr: boolean[]) {
-    let total = 0;
-    for (let i = 0; i < booleanArr.length; i++) {
-      if (booleanArr[i] === true) {
-        total++;
-      }
-    }
-    return total / this.#bufferSize;
   }
 }

@@ -1,10 +1,6 @@
 import type { NormalizedLandmark } from "@mediapipe/tasks-vision";
 import type { KeyType, LandmarkType, StateType } from "../types/types";
-import {
-  ExerciseEnum,
-  findMedian,
-  movingAverage,
-} from "../utils/functions";
+import { ExerciseEnum, findMedian, movingAverage } from "../utils/functions";
 import { SlidingWindow } from "../utils/SlidingWindow";
 
 export class ExerciseCalculator {
@@ -72,7 +68,7 @@ export class ExerciseCalculator {
     this.filteredSmoothedAngle = movingAverage(
       this.filteredSlidingWindow.array,
       this.filteredSmoothedAngle,
-      this.filteredSlidingWindow.get(this.filteredSlidingWindow.size - 1),
+      this.filteredSlidingWindow.get(this.filteredSlidingWindow.length - 1),
     );
     return this.filteredSmoothedAngle;
   }

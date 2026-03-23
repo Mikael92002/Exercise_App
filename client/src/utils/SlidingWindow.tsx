@@ -14,11 +14,29 @@ export class SlidingWindow<T> {
     this.array.push(value);
   }
 
-  get(index: number){
+  get(index: number) {
     return this.array[index];
   }
 
-  clear(){
+  clear() {
     this.array = [];
+  }
+
+  get length() {
+    return this.array.length;
+  }
+
+  getTrueRatio() {
+    let total = 0;
+    for (let i = 0; i < this.array.length; i++) {
+      if (this.array[i]) {
+        total++;
+      }
+    }
+    return total / this.size;
+  }
+
+  isFull() {
+    return this.array.length >= this.size;
   }
 }
