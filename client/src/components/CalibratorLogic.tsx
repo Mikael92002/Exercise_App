@@ -25,7 +25,7 @@ export class CalibratorLogic {
           CalibratorLogic.calibrationEnum.FLEXED,
           () => this.calibrator.calculateRelaxedThreshold(),
         );
-        return await result;
+        return result;
       }
       case CalibratorLogic.calibrationEnum.FLEXED: {
         this.calibrator.pushToCalibrationArr(angle);
@@ -33,27 +33,27 @@ export class CalibratorLogic {
           CalibratorLogic.calibrationEnum.COMPLETE,
           () => this.calibrator.calculateFlexedThreshold(),
         );
-        return await result;
+        return result;
       }
       default:
         return null;
     }
   }
 
-  async calibratorPromise(
+  calibratorPromise(
     nextState: number,
     calculation: () => number,
   ): Promise<number> {
-    const result: Promise<number> = new Promise((resolve) => {
+    const result: Promise<number> = new Promise<number>((resolve) => {
       setTimeout(() => {
+        const val = calculation();
         this.calibrationState = nextState;
         this.isCalibrating = false;
-        this.calibrator.calibrationArr.clear();
-        resolve(calculation());
+        resolve(val);
       }, 5000);
     });
 
-    return await result;
+    return result;
   }
 
   async checkAndMoveState(
