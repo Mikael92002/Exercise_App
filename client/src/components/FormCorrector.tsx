@@ -1,8 +1,5 @@
 import type { NormalizedLandmark } from "@mediapipe/tasks-vision";
-import {
-  addToSlidingWindow,
-  filterLandmarksByVisibility,
-} from "../utils/functions";
+import { filterLandmarksByVisibility } from "../utils/functions";
 
 export class FormCorrector {
   exercise: string;
@@ -32,11 +29,11 @@ export class FormCorrector {
 
       const leftArmVisibilityArr = this.#visibilityBuffer.get("left arm")!;
       leftArmArr === 3
-        ? this.addToBuffer(true, leftArmVisibilityArr)
-        : this.addToBuffer(false, leftArmVisibilityArr);
+        ? this.#addToBuffer(true, leftArmVisibilityArr)
+        : this.#addToBuffer(false, leftArmVisibilityArr);
 
       if (
-        this.checkBufferPercentage(leftArmVisibilityArr) < 0.7 &&
+        this.#checkBufferPercentage(leftArmVisibilityArr) < 0.7 &&
         leftArmVisibilityArr.length >= this.#bufferSize
       ) {
         console.log("left arm");
@@ -51,11 +48,11 @@ export class FormCorrector {
 
       const rightArmVisibilityArr = this.#visibilityBuffer.get("right arm")!;
       rightArmArr === 3
-        ? this.addToBuffer(true, rightArmVisibilityArr)
-        : this.addToBuffer(false, rightArmVisibilityArr);
+        ? this.#addToBuffer(true, rightArmVisibilityArr)
+        : this.#addToBuffer(false, rightArmVisibilityArr);
 
       if (
-        this.checkBufferPercentage(rightArmVisibilityArr) > 0.7 &&
+        this.#checkBufferPercentage(rightArmVisibilityArr) > 0.7 &&
         rightArmVisibilityArr.length >= this.#bufferSize
       ) {
         console.log("right arm");
@@ -66,7 +63,7 @@ export class FormCorrector {
     return { result: result, messages: msgArr };
   }
 
-  checkBufferPercentage(booleanArr: boolean[]) {
+  #checkBufferPercentage(booleanArr: boolean[]) {
     let total = 0;
     for (let i = 0; i < booleanArr.length; i++) {
       if (booleanArr[i] === true) {
@@ -76,7 +73,7 @@ export class FormCorrector {
     return total / this.#bufferSize;
   }
 
-  addToBuffer(booleanValue: boolean, booleanArr: boolean[]) {
+  #addToBuffer(booleanValue: boolean, booleanArr: boolean[]) {
     if (booleanArr.length === this.#bufferSize) {
       booleanArr.shift();
     }

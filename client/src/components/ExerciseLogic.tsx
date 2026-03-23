@@ -37,32 +37,36 @@ export class ExerciseLogic {
     // reset state to 0 when state 2 passed
     // full rep completed when back to 180/ reset state to 0.
 
-    // concentric case:
-    if (
-      this.exerciseCalculator.filteredSmoothedAngle <
-        this.exerciseCalculator.states["angleState 0"] &&
-      this.exerciseCalculator.filteredSmoothedAngle >
-        this.exerciseCalculator.states["angleState 2"] &&
-      this.state === ExerciseLogic.stateEnum.RESTING
-    ) {
-      this.state = ExerciseLogic.stateEnum.CONCENTRIC;
-    }
-    // eccentric case:
-    if (
-      this.exerciseCalculator.filteredSmoothedAngle <
-        this.exerciseCalculator.states["angleState 2"] &&
-      this.state === ExerciseLogic.stateEnum.CONCENTRIC
-    ) {
-      this.state = ExerciseLogic.stateEnum.ECCENTRIC;
-    }
-    // rep complete case:
-    if (
-      this.exerciseCalculator.filteredSmoothedAngle >
-        this.exerciseCalculator.states["angleState 0"] &&
-      this.state === ExerciseLogic.stateEnum.ECCENTRIC
-    ) {
-      this.reps++;
-      this.state = ExerciseLogic.stateEnum.RESTING;
+    switch (this.state) {
+      // transition to concentric:
+      case ExerciseLogic.stateEnum.RESTING:
+        if (
+          this.exerciseCalculator.filteredSmoothedAngle <
+            this.exerciseCalculator.states["angleState 0"] &&
+          this.exerciseCalculator.filteredSmoothedAngle >
+            this.exerciseCalculator.states["angleState 2"]
+        ) {
+          this.state = ExerciseLogic.stateEnum.CONCENTRIC;
+        }
+        break;
+      // transition to eccentric:
+      case ExerciseLogic.stateEnum.CONCENTRIC:
+        if (
+          this.exerciseCalculator.filteredSmoothedAngle <
+          this.exerciseCalculator.states["angleState 2"]
+        ) {
+          this.state = ExerciseLogic.stateEnum.ECCENTRIC;
+        }
+        break;
+      // transition to resting:
+      case ExerciseLogic.stateEnum.ECCENTRIC:
+        if (
+          this.exerciseCalculator.filteredSmoothedAngle >
+          this.exerciseCalculator.states["angleState 0"]
+        ) {
+          this.reps++;
+          this.state = ExerciseLogic.stateEnum.RESTING;
+        }
     }
   }
 
