@@ -9,8 +9,6 @@ export function ExerciseEnum() {
       states: {
         "angleState 0": 140,
         "angleState 2": 75,
-        "distanceState 0": 0.95,
-        "distanceState 2": 0.65,
       },
       landmarks: [11, 13, 15],
     },

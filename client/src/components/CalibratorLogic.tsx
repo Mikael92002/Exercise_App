@@ -18,26 +18,26 @@ export class CalibratorLogic {
   }
 
   async calibrationLoop(angle: number): Promise<number | null> {
-    if (this.calibrationState === CalibratorLogic.calibrationEnum.RESTING) {
-      // add angles to calibration array for 5 seconds, then
-      // make a calculation and move to next state:
-      this.calibrator.pushToCalibrationArr(angle);
-      const result: Promise<number | null> = this.checkAndMoveState(
-        CalibratorLogic.calibrationEnum.FLEXED,
-        () => this.calibrator.calculateRelaxedThreshold(),
-      );
-      return await result;
-    } else if (
-      this.calibrationState === CalibratorLogic.calibrationEnum.FLEXED
-    ) {
-      this.calibrator.pushToCalibrationArr(angle);
-      const result: Promise<number | null> = this.checkAndMoveState(
-        CalibratorLogic.calibrationEnum.COMPLETE,
-        () => this.calibrator.calculateFlexedThreshold(),
-      );
-      return await result;
+    switch (this.calibrationState) {
+      case CalibratorLogic.calibrationEnum.RESTING: {
+        this.calibrator.pushToCalibrationArr(angle);
+        const result: Promise<number | null> = this.checkAndMoveState(
+          CalibratorLogic.calibrationEnum.FLEXED,
+          () => this.calibrator.calculateRelaxedThreshold(),
+        );
+        return await result;
+      }
+      case CalibratorLogic.calibrationEnum.FLEXED: {
+        this.calibrator.pushToCalibrationArr(angle);
+        const result: Promise<number | null> = this.checkAndMoveState(
+          CalibratorLogic.calibrationEnum.COMPLETE,
+          () => this.calibrator.calculateFlexedThreshold(),
+        );
+        return await result;
+      }
+      default:
+        return null;
     }
-    return null;
   }
 
   async calibratorPromise(
@@ -70,6 +70,4 @@ export class CalibratorLogic {
     }
     return null;
   }
-
-
 }

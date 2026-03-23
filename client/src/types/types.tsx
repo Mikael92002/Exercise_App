@@ -3,8 +3,6 @@ export type KeyType = "Left Bicep Curl"; /*| "Pushup" | "Right Bicep Curl"*/
 export type StateType = {
   "angleState 0": number;
   "angleState 2": number;
-  "distanceState 0": number;
-  "distanceState 2": number;
 };
 export type LandmarkType = Number[];
 
