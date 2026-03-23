@@ -1,17 +1,21 @@
 import type { NormalizedLandmark } from "@mediapipe/tasks-vision";
 import { filterLandmarksByVisibility } from "../utils/functions";
+import { SlidingWindow } from "../utils/SlidingWindow";
 
 export class FormCorrector {
   exercise: string;
-  #visibilityBuffer: Map<String, boolean[]>;
+  #visibilityBuffer: Map<String, SlidingWindow<boolean>>;
   #bufferSize: number;
 
   constructor(exercise: string) {
     this.exercise = exercise;
-    this.#visibilityBuffer = new Map<String, boolean[]>();
-    this.#visibilityBuffer.set("left arm", []);
-    this.#visibilityBuffer.set("right arm", []);
+    this.#visibilityBuffer = new Map<String, SlidingWindow<boolean>>();
     this.#bufferSize = 15;
+    this.#visibilityBuffer.set("left arm", new SlidingWindow(this.#bufferSize));
+    this.#visibilityBuffer.set(
+      "right arm",
+      new SlidingWindow(this.#bufferSize),
+    );
   }
 
   correctForm(worldLandmarks: NormalizedLandmark[]): {
@@ -27,14 +31,14 @@ export class FormCorrector {
         0.65,
       ).length;
 
-      const leftArmVisibilityArr = this.#visibilityBuffer.get("left arm")!;
+      const leftArmSlidingWindow = this.#visibilityBuffer.get("left arm")!;
       leftArmArr === 3
-        ? this.#addToBuffer(true, leftArmVisibilityArr)
-        : this.#addToBuffer(false, leftArmVisibilityArr);
+        ? leftArmSlidingWindow.add(true)
+        : leftArmSlidingWindow.add(false);
 
       if (
-        this.#checkBufferPercentage(leftArmVisibilityArr) < 0.7 &&
-        leftArmVisibilityArr.length >= this.#bufferSize
+        this.#checkBufferPercentage(leftArmSlidingWindow.array) < 0.7 &&
+        leftArmSlidingWindow.size >= this.#bufferSize
       ) {
         console.log("left arm");
         result = false;
@@ -46,14 +50,14 @@ export class FormCorrector {
         0.8,
       ).length;
 
-      const rightArmVisibilityArr = this.#visibilityBuffer.get("right arm")!;
+      const rightArmSlidingWindow = this.#visibilityBuffer.get("right arm")!;
       rightArmArr === 3
-        ? this.#addToBuffer(true, rightArmVisibilityArr)
-        : this.#addToBuffer(false, rightArmVisibilityArr);
+        ? rightArmSlidingWindow.add(true)
+        : rightArmSlidingWindow.add(false);
 
       if (
-        this.#checkBufferPercentage(rightArmVisibilityArr) > 0.7 &&
-        rightArmVisibilityArr.length >= this.#bufferSize
+        this.#checkBufferPercentage(rightArmSlidingWindow.array) > 0.7 &&
+        rightArmSlidingWindow.size >= this.#bufferSize
       ) {
         console.log("right arm");
         result = false;
@@ -71,12 +75,5 @@ export class FormCorrector {
       }
     }
     return total / this.#bufferSize;
-  }
-
-  #addToBuffer(booleanValue: boolean, booleanArr: boolean[]) {
-    if (booleanArr.length === this.#bufferSize) {
-      booleanArr.shift();
-    }
-    booleanArr.push(booleanValue);
   }
 }

@@ -1,11 +1,11 @@
 import type { NormalizedLandmark } from "@mediapipe/tasks-vision";
 import type { KeyType, LandmarkType, StateType } from "../types/types";
 import {
-  addToSlidingWindow,
   ExerciseEnum,
   findMedian,
   movingAverage,
 } from "../utils/functions";
+import { SlidingWindow } from "../utils/SlidingWindow";
 
 export class ExerciseCalculator {
   states: StateType;
@@ -15,7 +15,7 @@ export class ExerciseCalculator {
   distanceArray: number[];
   filteredSmoothedAngle: number;
   filteredSmoothedDistance: number;
-  filteredSlidingWindow: number[];
+  filteredSlidingWindow: SlidingWindow<number>;
   exercise: string;
 
   constructor(exercise: KeyType) {
@@ -25,12 +25,12 @@ export class ExerciseCalculator {
     this.distanceArray = [0, 0, 0];
     this.filteredSmoothedAngle = 0;
     this.filteredSmoothedDistance = 0;
-    this.filteredSlidingWindow = [];
+    this.filteredSlidingWindow = new SlidingWindow(5);
     this.exercise = exercise;
   }
 
   // ANGLE-BASED METHOD:
-  
+
   // pass in filtered landmark array from poseLandmarker:
   calculateDistances(landmarkArr: NormalizedLandmark[]) {
     const A = landmarkArr[0];
@@ -64,15 +64,15 @@ export class ExerciseCalculator {
 
   #filterAngle(slidingWindow: number[]) {
     const filteredAngle = findMedian(slidingWindow);
-    addToSlidingWindow(filteredAngle, this.filteredSlidingWindow, 5);
+    this.filteredSlidingWindow.add(filteredAngle);
     return filteredAngle;
   }
 
   #smoothAngle() {
     this.filteredSmoothedAngle = movingAverage(
-      this.filteredSlidingWindow,
+      this.filteredSlidingWindow.array,
       this.filteredSmoothedAngle,
-      this.filteredSlidingWindow[this.filteredSlidingWindow.length - 1],
+      this.filteredSlidingWindow.get(this.filteredSlidingWindow.size - 1),
     );
     return this.filteredSmoothedAngle;
   }

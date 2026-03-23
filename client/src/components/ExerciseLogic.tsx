@@ -1,14 +1,14 @@
 // state machine class
 import type { NormalizedLandmark } from "@mediapipe/tasks-vision";
-import { addToSlidingWindow } from "../utils/functions";
 import { ExerciseCalculator } from "./ExerciseCalculator";
+import { SlidingWindow } from "../utils/SlidingWindow";
 
 export class ExerciseLogic {
   state: number;
   exerciseCalculator: ExerciseCalculator;
   reps: number;
   exercise: string;
-  globalSlidingWindow: number[];
+  globalSlidingWindow: SlidingWindow<number>;
 
   static stateEnum = Object.freeze({
     RESTING: 0,
@@ -24,7 +24,7 @@ export class ExerciseLogic {
     this.exerciseCalculator = exerciseCalculator;
     this.exercise = this.exerciseCalculator.exercise;
     this.reps = 0;
-    this.globalSlidingWindow = [];
+    this.globalSlidingWindow = new SlidingWindow(5);
     this.state = ExerciseLogic.stateEnum.RESTING;
   }
 
@@ -73,8 +73,8 @@ export class ExerciseLogic {
   #acceptCoordsLoopAngle(worldLandmarks: NormalizedLandmark[]) {
     this.exerciseCalculator.calculateDistances(worldLandmarks);
     const angle = this.exerciseCalculator.calculateAngle();
-    addToSlidingWindow(angle, this.globalSlidingWindow, 5);
-    this.exerciseCalculator.filterAndSmoothAngle(this.globalSlidingWindow);
+    this.globalSlidingWindow.add(angle);
+    this.exerciseCalculator.filterAndSmoothAngle(this.globalSlidingWindow.array);
   }
 
   acceptCoordsAndUpdateStateAngle(worldLandmarks: NormalizedLandmark[]) {

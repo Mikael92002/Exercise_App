@@ -1,27 +1,28 @@
-import { addToSlidingWindow, findMedian } from "../utils/functions";
+import { findMedian } from "../utils/functions";
+import { SlidingWindow } from "../utils/SlidingWindow";
 
 export class Calibrator {
-  calibrationArr: number[];
+  calibrationArr: SlidingWindow<number>;
   flexed_threshold: number | null;
   relaxed_threshold: number | null;
 
   constructor() {
-    this.calibrationArr = [];
+    this.calibrationArr = new SlidingWindow(100);
     this.flexed_threshold = null;
     this.relaxed_threshold = null;
   }
 
   calculateFlexedThreshold() {
-    this.flexed_threshold = findMedian(this.calibrationArr);
+    this.flexed_threshold = findMedian(this.calibrationArr.array);
     return this.flexed_threshold;
   }
 
   calculateRelaxedThreshold() {
-    this.relaxed_threshold = findMedian(this.calibrationArr);
+    this.relaxed_threshold = findMedian(this.calibrationArr.array);
     return this.relaxed_threshold;
   }
 
   pushToCalibrationArr(angle: number) {
-    addToSlidingWindow(angle, this.calibrationArr, 100);
+    this.calibrationArr.add(angle);
   }
 }

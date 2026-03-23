@@ -48,7 +48,7 @@ export class CalibratorLogic {
       setTimeout(() => {
         this.calibrationState = nextState;
         this.isCalibrating = false;
-        this.calibrator.calibrationArr = [];
+        this.calibrator.calibrationArr.clear();
         resolve(calculation());
       }, 5000);
     });
