@@ -1,16 +1,20 @@
 // state machine class
 import type { NormalizedLandmark } from "@mediapipe/tasks-vision";
-import {
-  addToSlidingWindow,
-} from "../utils/functions";
+import { addToSlidingWindow } from "../utils/functions";
 import { ExerciseCalculator } from "./ExerciseCalculator";
 
 export class ExerciseLogic {
-  state: number = 0;
+  state: number;
   exerciseCalculator: ExerciseCalculator;
   reps: number;
   exercise: string;
   globalSlidingWindow: number[];
+
+  static stateEnum = Object.freeze({
+    RESTING: 0,
+    CONCENTRIC: 1,
+    ECCENTRIC: 2,
+  });
 
   // landmarks for bicep curl:
   // right arm: 12 (shoulder), 14(elbow), 16 (wrist, maybe)
@@ -21,6 +25,7 @@ export class ExerciseLogic {
     this.exercise = this.exerciseCalculator.exercise;
     this.reps = 0;
     this.globalSlidingWindow = [];
+    this.state = ExerciseLogic.stateEnum.RESTING;
   }
 
   #stateUpdateLoopAngle() {
@@ -38,71 +43,27 @@ export class ExerciseLogic {
         this.exerciseCalculator.states["angleState 0"] &&
       this.exerciseCalculator.filteredSmoothedAngle >
         this.exerciseCalculator.states["angleState 2"] &&
-      this.state === 0
+      this.state === ExerciseLogic.stateEnum.RESTING
     ) {
-      this.state = 1;
+      this.state = ExerciseLogic.stateEnum.CONCENTRIC;
     }
     // eccentric case:
     if (
       this.exerciseCalculator.filteredSmoothedAngle <
         this.exerciseCalculator.states["angleState 2"] &&
-      this.state === 1
+      this.state === ExerciseLogic.stateEnum.CONCENTRIC
     ) {
-      this.state = 2;
+      this.state = ExerciseLogic.stateEnum.ECCENTRIC;
     }
     // rep complete case:
     if (
       this.exerciseCalculator.filteredSmoothedAngle >
         this.exerciseCalculator.states["angleState 0"] &&
-      this.state === 2
+      this.state === ExerciseLogic.stateEnum.ECCENTRIC
     ) {
       this.reps++;
-      this.state = 0;
+      this.state = ExerciseLogic.stateEnum.RESTING;
     }
-  }
-
-  #stateUpdateLoopDistance() {
-    if (
-      this.exerciseCalculator.filteredSmoothedDistance <
-        this.exerciseCalculator.states["distanceState 0"] &&
-      this.exerciseCalculator.filteredSmoothedDistance >
-        this.exerciseCalculator.states["distanceState 2"] &&
-      this.state === 0
-    ) {
-      this.state = 1;
-    }
-    // eccentric case:
-    if (
-      this.exerciseCalculator.filteredSmoothedDistance <
-        this.exerciseCalculator.states["distanceState 2"] &&
-      this.state === 1
-    ) {
-      this.state = 2;
-    }
-    // rep complete case:
-    if (
-      this.exerciseCalculator.filteredSmoothedDistance >
-        this.exerciseCalculator.states["distanceState 0"] &&
-      this.state === 2
-    ) {
-      this.reps++;
-      this.state = 0;
-    }
-  }
-
-  #acceptCoordsLoop(coords: NormalizedLandmark[]) {
-    const unfilteredRatio =
-      this.exerciseCalculator.calculateWristShoulderRatio(coords);
-
-    addToSlidingWindow(unfilteredRatio!, this.globalSlidingWindow, 5);
-
-    this.exerciseCalculator.filterAndSmoothDistance(this.globalSlidingWindow);
-  }
-
-  acceptCoordsAndUpdateState(coords: NormalizedLandmark[]) {
-    // Might need to change depending on exercise:
-    this.#acceptCoordsLoop(coords);
-    this.#stateUpdateLoopDistance();
   }
 
   #acceptCoordsLoopAngle(worldLandmarks: NormalizedLandmark[]) {

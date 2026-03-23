@@ -3,7 +3,6 @@ import type { KeyType, LandmarkType, StateType } from "../types/types";
 import {
   addToSlidingWindow,
   ExerciseEnum,
-  filterLandmarksByVisibility,
   findMedian,
   movingAverage,
 } from "../utils/functions";
@@ -31,7 +30,7 @@ export class ExerciseCalculator {
   }
 
   // ANGLE-BASED METHOD:
-
+  
   // pass in filtered landmark array from poseLandmarker:
   calculateDistances(landmarkArr: NormalizedLandmark[]) {
     const A = landmarkArr[0];
@@ -63,57 +62,6 @@ export class ExerciseCalculator {
     return angle;
   }
 
-  // DISTANCE-BASED METHOD:
-  calculateWristShoulderRatio(filteredWorldLandmarkArr: NormalizedLandmark[]) {
-    // depending on whether user is looking straight or to their side,
-    // choose ratio accordingly.
-    // will receive right arm and left arm landmarks
-
-    switch (this.exercise) {
-      case "Left Bicep Curl":
-        // change ratios if right arm visible
-        const rightShoulder = filteredWorldLandmarkArr[3];
-        const rightElbow = filteredWorldLandmarkArr[4];
-        const rightWrist = filteredWorldLandmarkArr[5];
-
-        if (
-          filterLandmarksByVisibility(
-            [rightShoulder, rightElbow, rightWrist],
-            0.95,
-          ).length === 3
-        ) {
-          console.log("right visible")
-          this.states["distanceState 2"] = 0.45
-        }
-        else{
-          this.states["distanceState 2"] = 0.65
-        }
-        const elbow = filteredWorldLandmarkArr[1];
-        const shoulder = filteredWorldLandmarkArr[0];
-        const wrist = filteredWorldLandmarkArr[2];
-
-        const upperArmLength = Math.hypot(
-          shoulder.x - elbow.x,
-          shoulder.y - elbow.y,
-          // shoulder.z - elbow.z,
-        );
-        const lowerArmLength = Math.hypot(
-          wrist.x - elbow.x,
-          wrist.y - elbow.y,
-          // wrist.z - elbow.z,
-        );
-        const distance = Math.hypot(
-          shoulder.x - wrist.x,
-          shoulder.y - wrist.y,
-          // shoulder.z - wrist.z,
-        );
-        const totalLength = upperArmLength + lowerArmLength;
-
-        const ratio = distance / totalLength;
-        return ratio;
-    }
-  }
-
   #filterAngle(slidingWindow: number[]) {
     const filteredAngle = findMedian(slidingWindow);
     addToSlidingWindow(filteredAngle, this.filteredSlidingWindow, 5);
@@ -132,25 +80,5 @@ export class ExerciseCalculator {
   filterAndSmoothAngle(slidingWindow: number[]) {
     this.#filterAngle(slidingWindow);
     this.#smoothAngle();
-  }
-
-  #filterDistance(slidingWindow: number[]) {
-    const filteredDistance = findMedian(slidingWindow);
-    addToSlidingWindow(filteredDistance, this.filteredSlidingWindow, 5);
-    return filteredDistance;
-  }
-
-  #smoothDistance() {
-    this.filteredSmoothedDistance = movingAverage(
-      this.filteredSlidingWindow,
-      this.filteredSmoothedDistance,
-      this.filteredSlidingWindow[this.filteredSlidingWindow.length - 1],
-    );
-    return this.filteredSmoothedDistance;
-  }
-
-  filterAndSmoothDistance(slidingWindow: number[]) {
-    this.#filterDistance(slidingWindow);
-    this.#smoothDistance();
   }
 }

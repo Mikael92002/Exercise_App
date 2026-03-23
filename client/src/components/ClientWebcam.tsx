@@ -8,14 +8,6 @@ const ClientWebcam = ({
   camRef: React.RefObject<Webcam | null>;
   setNoCam: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
-  
-  // const webCamStyle = {
-  //   position: "absolute" as const,
-  //   top: 0,
-  //   left: 0,
-  //   width: "100%",
-  //   height: "100%",
-  // };
 
   return (
     <>
