@@ -11,6 +11,7 @@ import RepMachine from "./RepMachine";
 import { FormCorrector } from "./FormCorrector";
 import FormModal from "./FormModal";
 import Modal from "react-modal";
+import { PoseRender } from "./PoseRender";
 
 Modal.setAppElement("#root");
 
@@ -19,14 +20,13 @@ const PoseCamController = () => {
   const webcamRef = useRef<Webcam | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   // to keep calling main loop:
-  const animationRef = useRef<number>(0);
   // needs to be a ref unlike a "let" in google's official code
   // because setLastVideoTime would cause a re-render:
-  const lastVideoTimeRef = useRef<number>(-1);
   const ExerciseCalculatorRef = useRef<ExerciseCalculator | null>(null);
   const ExerciseLogicRef = useRef<ExerciseLogic | null>(null);
   const FormCorrectorRef = useRef<FormCorrector | null>(null);
   const modalIsOpenRef = useRef<boolean>(false);
+  const PoseRenderRef = useRef<PoseRender | null>(null);
   // track landmarker loading:
   const [isLoaded, setIsLoaded] = useState(false);
   const [noCam, setNoCam] = useState<boolean>(false);
@@ -57,10 +57,10 @@ const PoseCamController = () => {
     }
     init();
 
-    // necessary to stop poseLandmarker
+    // necessary to stop PoseRenderRef
     // when cam turned off or component unmount:
     return () => {
-      if (animationRef.current) cancelAnimationFrame(animationRef.current);
+      PoseRenderRef.current?.dispose();
     };
   }, []);
 
@@ -72,118 +72,15 @@ const PoseCamController = () => {
     modalIsOpenRef.current = true;
   }
 
-  // main loop:
-  const predictWebcam = useCallback(() => {
-    const video = webcamRef.current?.video;
-    const canvas = canvasRef.current;
-
-    // video.readyState >=2 needed because
-    // 2 means video has enough data to play
-    if (video && canvas && landmarkerRef.current && video.readyState >= 2) {
-      if (
-        canvas.width !== video.videoWidth ||
-        canvas.height !== video.videoHeight
-      ) {
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-      }
-      const canvasCtx = canvas.getContext("2d");
-
-      // video.currentTime statement needed to prevent duplicate
-      // processing:
-      if (canvasCtx && video.currentTime !== lastVideoTimeRef.current) {
-        lastVideoTimeRef.current = video.currentTime;
-        const drawingUtils = new DrawingUtils(canvasCtx);
-
-        const results = landmarkerRef.current.detectForVideo(
-          video,
-          performance.now(),
-        );
-
-        canvasCtx.save();
-        canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
-
-        // landmark = [33 landmark objs]
-        if (results.landmarks) {
-          for (let i = 0; i < results.landmarks.length; i++) {
-            const landmarkArr = results.landmarks[i];
-            const worldLandmarkArr = results.worldLandmarks[i];
-
-            const formCheck =
-              FormCorrectorRef.current?.correctForm(landmarkArr);
-
-            if (formCheck?.result) {
-              if (modalIsOpenRef.current) {
-                closeModal();
-              }
-              const filteredLandmarkArr = filterLandmarksByLandmarks(
-                landmarkArr,
-                [11, 13, 15],
-              );
-              const filteredWorldLandmarkArr = filterLandmarksByLandmarks(
-                worldLandmarkArr,
-                [11, 13, 15, 12, 14, 16],
-              );
-
-              ExerciseLogicRef.current?.acceptCoordsAndUpdateStateAngle(
-                filteredWorldLandmarkArr,
-              );
-
-              const newRepCount = ExerciseLogicRef.current?.reps;
-              if (newRepCount !== displayReps) {
-                setDisplayReps(newRepCount!);
-              }
-
-              setDisplayAngle(
-                ExerciseCalculatorRef.current?.filteredSmoothedAngle!,
-              );
-
-              // console.log(
-              //   `landmark Z: ${filteredLandmarkArr[2].z}.
-              //   worldLandmark Z: ${filteredWorldLandmarkArr[2].z}`,
-              // );
-              console.log(
-                `filtered: ${ExerciseCalculatorRef.current?.filteredSmoothedAngle}`,
-              );
-
-              drawingUtils.drawLandmarks(filteredLandmarkArr, {
-                radius: (data) =>
-                  DrawingUtils.lerp(data.from!.z, -0.15, 0.1, 5, 1),
-                color: "red",
-              });
-              drawingUtils.drawConnectors(
-                filteredLandmarkArr,
-                PoseLandmarker.POSE_CONNECTIONS,
-              );
-            } else {
-              openModal();
-              setModalErrors(formCheck?.messages!);
-            }
-          }
-        }
-        canvasCtx.restore();
-        // results contains:
-        // {landmarks: [[[33 landmark objs]]],
-        // worldLandmarks: [[[33 landmark objs]]]}
-      }
-    }
-
-    animationRef.current = requestAnimationFrame(predictWebcam);
-  }, []);
-
   // start/finish button clicks:
   useEffect(() => {
     function finishWorkout() {
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-      }
-
+      PoseRenderRef.current?.dispose();
       ExerciseCalculatorRef.current = null;
       ExerciseLogicRef.current = null;
       FormCorrectorRef.current = null;
     }
     function startWorkout() {
-      animationRef.current = requestAnimationFrame(predictWebcam);
       setDisplayAngle(180);
       setDisplayReps(0);
       setModalErrors([]);
@@ -193,12 +90,69 @@ const PoseCamController = () => {
       ExerciseCalculatorRef.current = exerciseLogic.exerciseCalculator;
       ExerciseLogicRef.current = exerciseLogic;
       FormCorrectorRef.current = formCorrector;
+
+      // main loop:
+      if (webcamRef.current && landmarkerRef.current && canvasRef.current) {
+        PoseRenderRef.current = new PoseRender(
+          landmarkerRef.current,
+          webcamRef.current,
+          canvasRef.current,
+        );
+
+        PoseRenderRef.current.start(
+          (landmarkArr, worldLandmarkArr, drawingUtils) => {
+            const formCheck =
+              FormCorrectorRef.current?.correctForm(landmarkArr);
+
+            if (!formCheck?.result) {
+              openModal();
+              setModalErrors(formCheck?.messages!);
+              return;
+            }
+
+            if (modalIsOpenRef.current) {
+              closeModal();
+            }
+            const filteredLandmarkArr = filterLandmarksByLandmarks(
+              landmarkArr,
+              [11, 13, 15],
+            );
+            const filteredWorldLandmarkArr = filterLandmarksByLandmarks(
+              worldLandmarkArr,
+              [11, 13, 15, 12, 14, 16],
+            );
+
+            ExerciseLogicRef.current?.acceptCoordsAndUpdateStateAngle(
+              filteredWorldLandmarkArr,
+            );
+
+            const newRepCount = ExerciseLogicRef.current?.reps!;
+            if (newRepCount !== displayReps) {
+              setDisplayReps(newRepCount);
+            }
+
+            setDisplayAngle(
+              ExerciseCalculatorRef.current?.filteredSmoothedAngle!,
+            );
+
+            drawingUtils.drawLandmarks(filteredLandmarkArr, {
+              radius: (data) =>
+                DrawingUtils.lerp(data.from!.z, -0.15, 0.1, 5, 1),
+              color: "red",
+            });
+            drawingUtils.drawConnectors(
+              filteredLandmarkArr,
+              PoseLandmarker.POSE_CONNECTIONS,
+            );
+          },
+        );
+      }
     }
     if (camEnabled) {
       startWorkout();
     }
     return () => finishWorkout();
-  }, [camEnabled, predictWebcam]);
+  }, [camEnabled]);
 
   // enable/disable cam:
   function toggleCam() {
