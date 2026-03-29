@@ -1,6 +1,6 @@
 import { PoseLandmarker, DrawingUtils } from "@mediapipe/tasks-vision";
 import ClientWebcam from "./ClientWebcam";
-import { useState, useRef, useMemo, useEffect, useCallback } from "react";
+import { useState, useRef, useMemo, useEffect } from "react";
 import Webcam from "react-webcam";
 import { createPoseLandmarker } from "./Pose";
 import styles from "../css modules/PoseCamController.module.css";
