@@ -40,7 +40,6 @@ export class FormCorrector {
         leftArmSlidingWindow.getTrueRatio() < 0.7 &&
         leftArmSlidingWindow.isFull()
       ) {
-        console.log("left arm");
         result = false;
         msgArr.push("Left arm should be visible");
       }
@@ -59,7 +58,6 @@ export class FormCorrector {
         rightArmSlidingWindow.getTrueRatio() > 0.7 &&
         rightArmSlidingWindow.isFull()
       ) {
-        console.log("right arm");
         result = false;
         msgArr.push("Right arm should not be visible");
       }
