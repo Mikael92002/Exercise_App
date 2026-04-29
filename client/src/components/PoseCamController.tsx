@@ -126,14 +126,16 @@ const PoseCamController = () => {
               filteredWorldLandmarkArr,
             );
 
-            const newRepCount = ExerciseLogicRef.current?.reps!;
-            if (newRepCount !== displayReps) {
-              setDisplayReps(newRepCount);
-            }
+            setDisplayReps((prevRep) => {
+              const newRepCount = ExerciseLogicRef.current?.reps!;
+              return newRepCount !== prevRep ? newRepCount : prevRep;
+            });
 
-            setDisplayAngle(
-              ExerciseCalculatorRef.current?.filteredSmoothedAngle!,
-            );
+            setDisplayAngle((prevAngle) => {
+              const newAngle =
+                ExerciseCalculatorRef.current?.filteredSmoothedAngle!;
+              return newAngle !== prevAngle ? newAngle : prevAngle;
+            });
 
             drawingUtils.drawLandmarks(filteredLandmarkArr, {
               radius: (data) =>

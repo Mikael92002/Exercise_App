@@ -105,5 +105,5 @@ Go to `http://localhost:5173` in your browser.
 
 - Works best in **good lighting** with a clear background
 - Landmark detection accuracy drops when joints are **occluded/blocked** (e.g. side-on pushup view)
-- Currently optimized for **desktop** — mobile performance varies by device
+- Currently optimized for **desktop**. Mobile performance varies by device
 - Requires a **Chromium-based browser** for best performance with Google MediaPipe
