@@ -1,6 +1,6 @@
 import "./App.css";
-import PoseCamController from "./components/PoseCamController";
-import Header from "./components/Header";
+import PoseCamController from "./services/PoseCamController";
+import Header from "./services/Header";
 
 function App() {
   return (

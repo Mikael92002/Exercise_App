@@ -12,6 +12,7 @@ import { FormCorrector } from "./FormCorrector";
 import FormModal from "./FormModal";
 import Modal from "react-modal";
 import { PoseRender } from "./PoseRender";
+import DropdownMenuDemo from "../components/Dropdown";
 
 Modal.setAppElement("#root");
 
@@ -175,6 +176,7 @@ const PoseCamController = () => {
         <p>No camera access found.</p>
       ) : (
         <>
+        <DropdownMenuDemo></DropdownMenuDemo>
           <button onClick={toggleCam} className={styles.startButton}>
             {camEnabled ? "FINISH WORKOUT" : "START WORKOUT"}
           </button>
