@@ -12,6 +12,13 @@ export function ExerciseEnum() {
       },
       landmarks: [11, 13, 15],
     },
+    "Push Up": {
+      states: {
+        "angleState 0": 160,
+        "angleState 2": 55,
+      },
+      landmarks: [11, 13, 15]
+    }
   } as const;
   return enumObj;
 }

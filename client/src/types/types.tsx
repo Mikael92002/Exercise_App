@@ -1,4 +1,4 @@
-export type KeyType = "Left Bicep Curl"; /*| "Pushup" | "Right Bicep Curl"*/
+export type ExerciseType = "Left Bicep Curl" | "Push Up"; /*| "Pushup" | "Right Bicep Curl"*/
 
 export type StateType = {
   "angleState 0": number;
@@ -11,4 +11,4 @@ export type ValueType = {
   landmarks: LandmarkType;
 };
 
-export type EnumObjType = Record<KeyType, ValueType>;
+export type EnumObjType = Record<ExerciseType, ValueType>;

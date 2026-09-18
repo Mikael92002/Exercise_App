@@ -1,5 +1,5 @@
 import type { NormalizedLandmark } from "@mediapipe/tasks-vision";
-import type { KeyType, LandmarkType, StateType } from "../types/types";
+import type { ExerciseType, LandmarkType, StateType } from "../types/types";
 import { ExerciseEnum, findMedian, movingAverage } from "../utils/functions";
 import { SlidingWindow } from "../utils/SlidingWindow";
 
@@ -12,9 +12,9 @@ export class ExerciseCalculator {
   filteredSmoothedAngle: number;
   filteredSmoothedDistance: number;
   filteredSlidingWindow: SlidingWindow<number>;
-  exercise: string;
+  exercise: ExerciseType;
 
-  constructor(exercise: KeyType) {
+  constructor(exercise: ExerciseType) {
     this.states = this.enumObj[exercise]["states"];
     this.landmarks = this.enumObj[exercise]["landmarks"];
     this.angle = -1;

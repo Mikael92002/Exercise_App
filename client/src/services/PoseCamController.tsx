@@ -12,7 +12,8 @@ import { FormCorrector } from "./FormCorrector";
 import FormModal from "./FormModal";
 import Modal from "react-modal";
 import { PoseRender } from "./PoseRender";
-import DropdownMenuDemo from "../components/Dropdown";
+import DropDownMenu from "../components/Dropdown";
+import type { ExerciseType } from "../types/types";
 
 Modal.setAppElement("#root");
 
@@ -35,6 +36,7 @@ const PoseCamController = () => {
   const [displayReps, setDisplayReps] = useState(0);
   const [displayAngle, setDisplayAngle] = useState(180);
   const [modalErrors, setModalErrors] = useState<string[]>([]);
+  const [exercise, setExercise] = useState<ExerciseType | "">("");
 
   const sweetSpot = useMemo(() => {
     return ExerciseCalculatorRef.current?.states["angleState 2"];
@@ -85,7 +87,8 @@ const PoseCamController = () => {
       setDisplayAngle(180);
       setDisplayReps(0);
       setModalErrors([]);
-      const exerciseCalc = new ExerciseCalculator("Left Bicep Curl");
+      const exerciseCalc = exercise ? new ExerciseCalculator(exercise): null;
+      if(!exerciseCalc) return;
       const exerciseLogic = new ExerciseLogic(exerciseCalc);
       const formCorrector = new FormCorrector(exerciseLogic.exercise);
       ExerciseCalculatorRef.current = exerciseLogic.exerciseCalculator;
@@ -161,6 +164,7 @@ const PoseCamController = () => {
   function toggleCam() {
     // poseLandmarker not ready yet/do not do anything:
     if (!landmarkerRef.current) return;
+    if (!exercise) return;
     setCamEnabled(!camEnabled);
   }
 
@@ -176,7 +180,7 @@ const PoseCamController = () => {
         <p>No camera access found.</p>
       ) : (
         <>
-        <DropdownMenuDemo></DropdownMenuDemo>
+        <DropDownMenu exercise={exercise} setExercise={setExercise}></DropDownMenu>
           <button onClick={toggleCam} className={styles.startButton}>
             {camEnabled ? "FINISH WORKOUT" : "START WORKOUT"}
           </button>
