@@ -119,11 +119,11 @@ const PoseCamController = () => {
             }
             const filteredLandmarkArr = filterLandmarksByLandmarks(
               landmarkArr,
-              [11, 13, 15],
+              ExerciseCalculatorRef.current?.landmarks as number[],
             );
             const filteredWorldLandmarkArr = filterLandmarksByLandmarks(
               worldLandmarkArr,
-              [11, 13, 15, 12, 14, 16],
+              ExerciseCalculatorRef.current?.landmarks as number[],
             );
 
             ExerciseLogicRef.current?.acceptCoordsAndUpdateStateAngle(

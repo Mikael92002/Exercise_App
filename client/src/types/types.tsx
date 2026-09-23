@@ -1,4 +1,4 @@
-export type ExerciseType = "Left Bicep Curl" | "Push Up"; /*| "Pushup" | "Right Bicep Curl"*/
+export type ExerciseType = "Left Bicep Curl" | "Push Up" | "Squat"; /*| "Pushup" | "Right Bicep Curl"*/
 
 export type StateType = {
   "angleState 0": number;

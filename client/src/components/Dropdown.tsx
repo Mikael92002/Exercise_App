@@ -22,6 +22,7 @@ const DropdownMenu = ({exercise, setExercise}: DropdownMenuProps) => {
         </option>
         <option value="Left Bicep Curl">Left Bicep Curl</option>
         <option value="Push Up">Push up</option>
+        <option value="Squat">Squat</option>
       </select>
       <button
         onClick={() => {

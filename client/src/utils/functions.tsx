@@ -18,6 +18,13 @@ export function ExerciseEnum() {
         "angleState 2": 55,
       },
       landmarks: [11, 13, 15]
+    },
+    "Squat": {
+      states: {
+        "angleState 0": 180,
+        "angleState 2": 60,
+      },
+      landmarks: [23, 25, 27]
     }
   } as const;
   return enumObj;
