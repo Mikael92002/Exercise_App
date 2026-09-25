@@ -104,6 +104,7 @@ export class FormCorrector {
         leftLegSlidingWindow?.isFull()
       ) {
         msgArr.push("Left leg should be visible");
+        result = false;
       }
 
       const rightLegArr = filterLandmarksByVisibility(
@@ -121,6 +122,7 @@ export class FormCorrector {
         rightLegSlidingWindow.isFull()
       ) {
         msgArr.push("Right leg should not be visible");
+        result = false;
       }
     }
     return { result: result, messages: msgArr };
