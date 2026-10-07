@@ -8,8 +8,11 @@
 }
 .exercise-name[data-selected]{
     background-color: white;
+    color: black;
 }
 .exercise-name{
     background-color: black;
      color: white;
+     cursor: pointer;
+     padding-inline: 0.25rem;
 }
