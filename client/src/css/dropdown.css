@@ -1,0 +1,15 @@
+
+.exercise-select{
+    background-color: black;
+    color: white;
+}
+.exercise-name[data-focus]{
+    background-color: black;
+}
+.exercise-name[data-selected]{
+    background-color: white;
+}
+.exercise-name{
+    background-color: black;
+     color: white;
+}

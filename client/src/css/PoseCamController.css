@@ -16,6 +16,8 @@
   margin-bottom: 5px;
   font-family: 'Montserrat';
   font-size: x-large;
+  cursor: pointer;
+  padding: 0.25rem;
 }
 
 canvas,

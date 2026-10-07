@@ -4,11 +4,13 @@ const Header = () => {
   return (
     <div className={styles.title_container}>
       <span className={styles.title}>
-        Exerc<span className={styles.title_ai}>AI</span>se
+        <a href="/" id={styles.exerciseLink}>Exerc<span className={styles.title_ai}>AI</span>se</a>
       </span>
       <nav className={styles.links}>
-        <button>Calibration</button>
-        <button>Exercise</button>
+        {/* If user not logged in: */}
+        <button>Log In</button>
+        <button>Sign Up</button>
+        {/* If user logged in: */}
       </nav>
     </div>
   );

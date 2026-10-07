@@ -3,7 +3,7 @@ import ClientWebcam from "./ClientWebcam";
 import { useState, useRef, useMemo, useEffect } from "react";
 import Webcam from "react-webcam";
 import { createPoseLandmarker } from "./Pose";
-import styles from "../css modules/PoseCamController.module.css";
+import "../css/PoseCamController.css"
 import { ExerciseCalculator } from "./ExerciseCalculator";
 import { ExerciseLogic } from "./ExerciseLogic";
 import { filterLandmarksByLandmarks } from "../utils/functions";
@@ -167,7 +167,7 @@ const PoseCamController = () => {
     if (!landmarkerRef.current) return;
     if (!exercise) {
       toast.error("Please choose an exercise!", {
-        className: styles.error_toast
+        className: "error_toast"
       });
       return;
     }
@@ -180,7 +180,7 @@ const PoseCamController = () => {
   };
 
   return (
-    <div className={styles.main_container}>
+    <div className="main_container">
       {!isLoaded && <p>Loading poseLandmarker</p>}
       {noCam ? (
         <p>No camera access found.</p>
@@ -192,16 +192,16 @@ const PoseCamController = () => {
               setExercise={setExercise}
             ></DropDownMenu>
           )}
-          <button onClick={toggleCam} className={styles.startButton}>
+          <button onClick={toggleCam} className="startButton">
             {camEnabled ? "FINISH WORKOUT" : "START WORKOUT"}
           </button>
           {camEnabled && (
             <>
-              <div className={styles.rep_counter_container}>
-                <div className={styles.rep_counter}>Reps: {displayReps}</div>
+              <div className="rep_counter_container">
+                <div className="rep_counter">Reps: {displayReps}</div>
               </div>
-              <div className={styles.action_container}>
-                <div className={styles.webcam_canvas_container}>
+              <div className="action_container">
+                <div className="webcam_canvas_container">
                   <ClientWebcam camRef={webcamRef} setNoCam={setNoCam} />
                   <canvas ref={canvasRef}></canvas>
                   <RepMachine
@@ -215,7 +215,7 @@ const PoseCamController = () => {
                     ></FormModal>
                   )}
                 </div>
-                <div className={styles.state_display_container}></div>
+                <div className="state_display_container"></div>
               </div>
             </>
           )}

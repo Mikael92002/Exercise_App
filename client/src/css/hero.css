@@ -1,0 +1,42 @@
+
+.hero-container{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.selection-grid{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    justify-items: center;
+    column-gap: 0.5rem;
+}
+a {
+all: unset;
+cursor: pointer;
+border: 1px solid black;
+border-radius: 20px;
+font-family: 'Montserrat', sans-serif;
+}
+h1, h2, h3{
+margin: 0;
+padding: 0;
+}
+h1{
+    font-family: 'Montserrat', sans-serif;
+    margin-bottom: 0.25rem;
+    background-color: black;
+    color: beige;
+    padding-inline: 1rem;
+    padding-block: 0.25rem;
+}
+h2{
+    font-family: sans-serif;
+    border-bottom: 1px solid black;
+    padding-bottom: 0.5rem;
+    width: 100%;
+    margin-bottom: 1rem;
+}
+.grid-img {
+    width: 200px;
+}

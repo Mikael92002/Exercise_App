@@ -24,3 +24,8 @@
 .links > :not(:last-child) {
   border-right: 1px solid black;
 }
+
+#exerciseLink{
+  all: unset;
+  cursor: pointer;
+}

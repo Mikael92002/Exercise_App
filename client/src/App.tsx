@@ -1,14 +1,14 @@
 import "./App.css";
-import PoseCamController from "./services/PoseCamController";
-import Header from "./services/Header";
+import Header from "./components/Header";
 import { Toaster } from "sonner";
+import { Outlet } from "react-router";
 
 function App() {
   return (
     <div className="app_container">
       <Toaster></Toaster>
       <Header></Header>
-      <PoseCamController />
+      <Outlet></Outlet>
     </div>
   );
 }
