@@ -12,7 +12,7 @@ export class FormCorrector {
     this.#visibilityBuffer = new Map<String, SlidingWindow<boolean>>();
     this.#bufferSize = 15;
     switch (this.exercise) {
-      case "Left Bicep Curl":
+      case "Bicep Curl":
         this.#visibilityBuffer.set(
           "left arm",
           new SlidingWindow(this.#bufferSize),
