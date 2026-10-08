@@ -1,18 +1,62 @@
+.dropdown_main_container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+label {
+  display: block;
+  font-family: "Montserrat";
+  font-weight: 600;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  border: 1px solid black;
+  width: 100%;
+  box-sizing: border-box;
+}
+.listbox_button {
+  background-color: black;
+  color: white;
+  font-size: 1.5rem;
+  font-family: "Montserrat";
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}
 
-.exercise_select{
-    background-color: black;
-    color: white;
+.arrow{
+    transition: transform 0.2s ease-in-out;
 }
-.exercise_name[data-focus]{
-    background-color: black;
+.listbox_button[data-open] .arrow{
+    transform: rotate(180deg);
 }
-.exercise_name[data-selected]{
-    background-color: white;
-    color: black;
+
+.listbox_options {
+  background-color: black;
+  border-radius: 10px;
+  overflow: hidden;
+  width: var(--button-width);
+  font-family: "Montserrat";
 }
-.exercise_name{
-    background-color: black;
-     color: white;
-     cursor: pointer;
-     padding-inline: 0.25rem;
+
+.listbox_option[data-focus] {
+  background-color: black;
+}
+.listbox_option[data-selected] {
+  background-color: white;
+  color: black;
+}
+.listbox_option {
+  background-color: black;
+  color: white;
+  cursor: pointer;
+  padding-inline: 0.25rem;
+}
+
+.arrow {
+  filter: invert(100%);
 }

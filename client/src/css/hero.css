@@ -40,3 +40,9 @@ h2{
 .grid-img {
     width: 200px;
 }
+
+@media screen and (max-width: 500px) {
+    .grid-img{
+        width: 150px;
+    }
+}

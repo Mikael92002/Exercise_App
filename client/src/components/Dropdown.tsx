@@ -6,6 +6,7 @@ import {
   ListboxOption,
   ListboxOptions,
 } from "@headlessui/react";
+import downArrow from "../assets/down arrow.png"
 
 interface DropdownMenuProps {
   exercise: ExerciseType | "";
@@ -17,15 +18,15 @@ const exercises = ["Bicep Curl", "Push Up", "Squat"];
 const DropdownMenu = ({ exercise, setExercise }: DropdownMenuProps) => {
   return (
     <div className="dropdown_main_container">
-      <label htmlFor="exercise_select">Exercise Selection: </label>
+      <label htmlFor="exercise_select">Choose Exercise</label>
       <Listbox onChange={(e) => setExercise(e)} value={exercise}>
-        <ListboxButton className="exercise_select">
-          {exercise ? exercise : "Please choose an exercise"}
+        <ListboxButton className="listbox_button">
+          {exercise ? exercise : "Please choose an exercise"} <img src={downArrow} alt="arrow pointing down" width={20} className="arrow"/>
         </ListboxButton>
-        <ListboxOptions anchor="bottom">
+        <ListboxOptions anchor="bottom" transition className="listbox_options">
           {exercises.map((exercise) => {
             return (
-              <ListboxOption className="exercise_name" value={exercise} key={exercise}>
+              <ListboxOption className="listbox_option" value={exercise} key={exercise}>
                 {exercise}
               </ListboxOption>
             );
