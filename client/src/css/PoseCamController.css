@@ -9,6 +9,11 @@
   align-items: center;
 }
 
+.workout_container{
+  height: 100%;
+  width: 100%;
+}
+
 .startButton {
   background-color: black;
   border-radius: 5px;

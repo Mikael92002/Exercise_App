@@ -3,7 +3,7 @@ import ClientWebcam from "./ClientWebcam";
 import { useState, useRef, useMemo, useEffect } from "react";
 import Webcam from "react-webcam";
 import { createPoseLandmarker } from "./Pose";
-import "../css/PoseCamController.css"
+import "../css/PoseCamController.css";
 import { ExerciseCalculator } from "./ExerciseCalculator";
 import { ExerciseLogic } from "./ExerciseLogic";
 import { filterLandmarksByLandmarks } from "../utils/functions";
@@ -167,7 +167,7 @@ const PoseCamController = () => {
     if (!landmarkerRef.current) return;
     if (!exercise) {
       toast.error("Please choose an exercise!", {
-        className: "error_toast"
+        className: "error_toast",
       });
       return;
     }
@@ -192,33 +192,35 @@ const PoseCamController = () => {
               setExercise={setExercise}
             ></DropDownMenu>
           )}
-          <button onClick={toggleCam} className="startButton">
-            {camEnabled ? "FINISH WORKOUT" : "START WORKOUT"}
-          </button>
-          {camEnabled && (
-            <>
-              <div className="rep_counter_container">
-                <div className="rep_counter">Reps: {displayReps}</div>
-              </div>
-              <div className="action_container">
-                <div className="webcam_canvas_container">
-                  <ClientWebcam camRef={webcamRef} setNoCam={setNoCam} />
-                  <canvas ref={canvasRef}></canvas>
-                  <RepMachine
-                    angle={displayAngle}
-                    sweetSpot={sweetSpot}
-                  ></RepMachine>
-                  {modalIsOpenRef.current && (
-                    <FormModal
-                      modalSize={modalSizingStyle}
-                      errors={modalErrors}
-                    ></FormModal>
-                  )}
+          <div className="workout_container">
+            <button onClick={toggleCam} className="startButton">
+              {camEnabled ? "FINISH WORKOUT" : "START WORKOUT"}
+            </button>
+            {camEnabled && (
+              <>
+                <div className="rep_counter_container">
+                  <div className="rep_counter">Reps: {displayReps}</div>
                 </div>
-                <div className="state_display_container"></div>
-              </div>
-            </>
-          )}
+                <div className="action_container">
+                  <div className="webcam_canvas_container">
+                    <ClientWebcam camRef={webcamRef} setNoCam={setNoCam} />
+                    <canvas ref={canvasRef}></canvas>
+                    <RepMachine
+                      angle={displayAngle}
+                      sweetSpot={sweetSpot}
+                    ></RepMachine>
+                    {modalIsOpenRef.current && (
+                      <FormModal
+                        modalSize={modalSizingStyle}
+                        errors={modalErrors}
+                      ></FormModal>
+                    )}
+                  </div>
+                  <div className="state_display_container"></div>
+                </div>
+              </>
+            )}
+          </div>
         </>
       )}
     </div>
