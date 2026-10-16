@@ -1,4 +1,4 @@
-import { HERO_CATCHPHRASES } from "../utils/constants";
+import { HERO_CATCHPHRASES } from "../features/workout/utils/constants";
 import pushup from "../assets/pushup view.png";
 import calibration from "../assets/calibration view.png";
 import "../css/hero.css"
