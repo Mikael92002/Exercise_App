@@ -1,4 +1,4 @@
-import styles from "../css modules/RepMachine.module.css";
+import styles from "./css modules/RepMachine.module.css";
 
 const RepMachine = ({
   angle,

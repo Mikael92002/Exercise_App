@@ -1,6 +1,6 @@
 import App from "./App";
-import Hero from "./components/Hero";
-import PoseCamController from "./services/PoseCamController";
+import Hero from "./features/workout/components/Hero";
+import PoseCamController from "./features/workout/PoseCamController";
 
 const routes = [{
     path: "/",

@@ -1,4 +1,4 @@
-import styles from "../css modules/Webcam.module.css";
+import styles from "./css modules/Webcam.module.css";
 import Webcam from "react-webcam";
 
 const ClientWebcam = ({

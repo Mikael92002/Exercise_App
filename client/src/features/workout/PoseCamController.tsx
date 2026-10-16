@@ -1,6 +1,6 @@
 import Modal from "react-modal";
 import DropdownMenu from "./components/Dropdown";
-import "../css/PoseCamController.css";
+import "./css/PoseCamController.css";
 import { useCameraAvailability } from "./hooks/useCameraAvailability";
 import { usePoseLandmarker } from "./hooks/usePoseLandmarker";
 import { useWorkoutSession } from "./hooks/useWorkoutSession";
